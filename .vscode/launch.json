@@ -1,0 +1,20 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: 現在のファイル",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                    "{\"date\": \"2023-08-27\",\"url_list\": [\"https://www.amazon.co.jp/SOTO-%E3%82%BD%E3%83%88-ST-260-%E3%83%AC%E3%82%AE%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC%E3%83%A9%E3%83%B3%E3%82%BF%E3%83%B3/dp/B00279LZ0G?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=IMGRDI1D6HTH&keywords=B00279LZ0G&qid=1693106229&s=sports&sprefix=b00279lz0g%2Csporting%2C166&sr=1-1&th=1&linkCode=ll1&tag=***REMOVED***&linkId=1f88b03afc3a732f7efbddb7f7036744&language=ja_JP&ref_=as_li_ss_tl\", \"https://www.amazon.co.jp/%E3%82%B9%E3%83%8E%E3%83%BC%E3%83%94%E3%83%BC%E3%82%AF-snow-peak-%E3%82%AF%E3%83%83%E3%82%AB%E3%83%BC1000-SCS-200/dp/B00QEN7NMU?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=3P78PZ0KS3ER2&keywords=B00QEN7NMU&qid=1693106262&s=sports&sprefix=b00qen7nmu%2Csporting%2C168&sr=1-3&th=1&linkCode=ll1&tag=***REMOVED***&linkId=33ec3187e4af6031db5d9f908964645c&language=ja_JP&ref_=as_li_ss_tl\"]}",
+                    "{\"date\": \"2023-08-27\",\"url_list\": [\"https://www.amazon.co.jp/ogawa-%E3%82%AA%E3%82%AC%E3%83%AF-%E3%82%A2%E3%82%A6%E3%83%88%E3%83%89%E3%82%A2-%E3%83%9D%E3%83%BC%E3%83%AB%E3%83%86%E3%83%B3%E3%83%88-2728/dp/B09QZ2TXKN?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=2GC8OZXJBZSRE&keywords=B09QZ2TXKN&qid=1693130411&sprefix=b09qz2txkn%2Caps%2C172&sr=8-1&linkCode=ll1&tag=***REMOVED***&linkId=be699e0ff03ea8fee3760182b97933cd&language=ja_JP&ref_=as_li_ss_tl\", \"https://www.amazon.co.jp/%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%9E%E3%83%B3-Coleman-%E3%83%A9%E3%83%B3%E3%82%BF%E3%83%B3-%E3%82%B5%E3%82%A6%E3%83%B3%E3%83%89%E3%82%A2%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%88%E3%83%A9%E3%83%B3%E3%82%BF%E3%83%B3-2000034246/dp/B07HRPBRBS?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=WY7S1YEF1J5Z&keywords=B07HRPBRBS&qid=1693130354&sprefix=b07hrpbrbs%2Caps%2C177&sr=8-1&linkCode=ll1&tag=***REMOVED***&linkId=69b58305dacfc83d4926d6d9f70726fb&language=ja_JP&ref_=as_li_ss_tl\"]}"
+            ]
+        }
+    ]
+}
