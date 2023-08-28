@@ -76,6 +76,12 @@ def post_tweet(asin, shortened_url):
   product_title         = product_data.item_info.title.display_value
   product_discount_rate = product_data.offers.listings[0].price.savings.percentage
 
+  product_brand               = product_data.item_info.by_line_info.brand.display_value
+  product_brand_notation_list = re.split('[()]', product_brand)[:-1]
+  for product_brand_notation in product_brand_notation_list:
+    product_brand_notation_with_hashtag = '#' + product_brand_notation + ' '
+    product_title = product_title.replace(product_brand_notation, product_brand_notation_with_hashtag)
+
   if len(product_title) >= 60:
      product_title = product_title[:60] + '…'
 
