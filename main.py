@@ -1,4 +1,3 @@
-from math import floor
 import sys
 import json
 import datetime
@@ -74,11 +73,8 @@ def extract_asin_from_url(url):
 def post_tweet(asin, shortened_url):
   product_data = AMAZON_API.get_items(item_ids=[asin])['data'][asin]
 
-  product_reference_price = product_data.offers.listings[0].saving_basis.amount
-  product_lower_price     = product_data.offers.summaries[0].lowest_price.amount
-
   product_title         = product_data.item_info.title.display_value
-  product_discount_rate = floor(((product_reference_price - product_lower_price) / product_reference_price) * 100)  # 様々な条件によって表示される価格（販売元）が異なる場合があるため最安価格の割引率を計算
+  product_discount_rate = product_data.offers.listings[0].price.savings.percentage
   product_price         = product_data.offers.summaries[0].lowest_price.display_amount
 
   if len(product_title) >= 60:
