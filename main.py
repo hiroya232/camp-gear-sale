@@ -75,6 +75,7 @@ def post_tweet(asin, shortened_url):
 
   product_title         = product_data.item_info.title.display_value
   product_discount_rate = product_data.offers.listings[0].price.savings.percentage
+  product_price         = product_data.offers.summaries[0].lowest_price.display_amount
 
   if len(product_title) >= 60:
      product_title = product_title[:60] + '…'
@@ -84,6 +85,8 @@ def post_tweet(asin, shortened_url):
 【{product_discount_rate}%オフ！】
 
 {product_title}
+
+価格 : {product_price}
 
 詳細は🔽からチェック✔
 {shortened_url}
