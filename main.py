@@ -73,8 +73,11 @@ def extract_asin_from_url(url):
 def post_tweet(asin, shortened_url):
   product_data = AMAZON_API.get_items(item_ids=[asin])['data'][asin]
 
-  product_title = product_data.item_info.title.display_value
+  product_title         = product_data.item_info.title.display_value
   product_discount_rate = product_data.offers.listings[0].price.savings.percentage
+
+  if len(product_title) >= 60:
+     product_title = product_title[:60] + '…'
 
   payload = {
     'text': f"""
