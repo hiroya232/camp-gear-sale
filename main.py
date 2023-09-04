@@ -72,7 +72,7 @@ def post_tweet(asin_list, shortened_url_list, scheduler_name):
     else:
       product_brand_notation_with_hashtag = '#' + product_brand_notation + ' '
 
-    product_title = product_title.replace(product_brand_notation, product_brand_notation_with_hashtag)
+    product_title = re.sub(product_brand_notation, product_brand_notation_with_hashtag, product_title, flags=re.IGNORECASE)
 
   if len(product_title) >= 60:
      product_title = product_title[:60] + '…'
