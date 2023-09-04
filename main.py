@@ -74,9 +74,11 @@ def post_tweet(asin, shortened_url):
   product_discount_rate = product_data.offers.listings[0].price.savings.percentage
 
   product_brand               = product_data.item_info.by_line_info.brand.display_value
-  product_brand_notation_list = re.split('[()]', product_brand)[:-1]
+  product_brand_notation_list = re.split('[()]', product_brand)
   for product_brand_notation in product_brand_notation_list:
-    if " " in product_brand_notation:
+    if product_brand_notation == ' ':
+      continue
+    elif ' ' in product_brand_notation:
       product_brand_notation_without_white_space = product_brand_notation.replace(' ', '')
       product_brand_notation_with_hashtag = '#' + product_brand_notation_without_white_space + ' '
     else:
