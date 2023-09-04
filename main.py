@@ -2,11 +2,13 @@ import sys
 import json
 import datetime
 import re
+import time
 import requests
 import os
 from dotenv import load_dotenv
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.events import EVENT_JOB_EXECUTED, JobExecutionEvent
 from pyshorteners import Shortener
 from amazon.paapi import AmazonAPI
 from requests_oauthlib import OAuth1
@@ -31,26 +33,8 @@ ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
 TWITTER_AUTH = OAuth1(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 TWITTER_API_URL = 'https://api.twitter.com/2/tweets'
 
-
-def get_tweet_datetime_list(tweet_datetime):
-  return [
-    tweet_datetime.replace(hour=7, minute=0, second=0),
-    tweet_datetime.replace(hour=7, minute=30, second=0),
-    tweet_datetime.replace(hour=8, minute=0, second=0),
-    tweet_datetime.replace(hour=12, minute=0, second=0),
-    tweet_datetime.replace(hour=12, minute=30, second=0),
-    tweet_datetime.replace(hour=13, minute=0, second=0),
-    tweet_datetime.replace(hour=15, minute=0, second=0),
-    tweet_datetime.replace(hour=15, minute=30, second=0),
-    tweet_datetime.replace(hour=16, minute=0, second=0),
-    tweet_datetime.replace(hour=16, minute=30, second=0),
-    tweet_datetime.replace(hour=17, minute=0, second=0),
-    tweet_datetime.replace(hour=20, minute=0, second=0),
-    tweet_datetime.replace(hour=20, minute=30, second=0),
-    tweet_datetime.replace(hour=21, minute=0, second=0),
-    tweet_datetime.replace(hour=21, minute=30, second=0),
-    tweet_datetime.replace(hour=22, minute=0, second=0),
-  ]
+scheduler_list = {}
+target_product_idx_list = {}
 
 
 def extract_asin_from_url(url):
@@ -67,8 +51,12 @@ def extract_asin_from_url(url):
   return None
 
 
-def post_tweet(asin, shortened_url):
-  product_data = AMAZON_API.get_items(item_ids=[asin])['data'][asin]
+def post_tweet(asin_list, shortened_url_list, scheduler_name):
+  global target_product_idx_list
+
+  target_product_asin = asin_list[target_product_idx_list[scheduler_name]]
+
+  product_data = AMAZON_API.get_items(item_ids=[target_product_asin])['data'][target_product_asin]
 
   product_title         = product_data.item_info.title.display_value
   product_discount_rate = product_data.offers.listings[0].price.savings.percentage
@@ -94,7 +82,7 @@ def post_tweet(asin, shortened_url):
 {product_title}
 
 詳細は🔽からチェック✔
-{shortened_url}
+{shortened_url_list[target_product_idx_list[scheduler_name]]}
 
 #キャンプ
 #アウトドア
@@ -104,33 +92,49 @@ def post_tweet(asin, shortened_url):
 
   response = requests.post(TWITTER_API_URL, auth=TWITTER_AUTH, json=payload)
 
-  print(asin)
   print(response.json())
+
+  target_product_idx_list[scheduler_name] += 1
+  if target_product_idx_list[scheduler_name] >= len(asin_list):
+     return scheduler_name
+
+
+def job_listener(event: JobExecutionEvent):
+  finished_scheduler_name = event.retval
+  if finished_scheduler_name is not None:
+    scheduler_list[finished_scheduler_name].shutdown(wait=True)
 
 
 def main():
   shortener = Shortener()
-  scheduler = BlockingScheduler(timezone='Asia/Tokyo')
 
   for index, arg in enumerate(sys.argv):
     if index != 0:
       persed_arg = (json.loads(arg))
-      tweet_date = persed_arg['date']
+
       url_list   = persed_arg['url_list']
-
-      tweet_datetime = get_tweet_datetime_list(datetime.datetime.strptime(tweet_date, '%Y-%m-%d'))
-
       asin_list          = []
       shortened_url_list = []
       for url in url_list:
         asin_list.append(extract_asin_from_url(url))
         shortened_url_list.append(shortener.tinyurl.short(url))
 
-      for asin, shortened_url, tweet_datetime in zip(asin_list, shortened_url_list, tweet_datetime):
-        if asin is not None:
-          scheduler.add_job(post_tweet, 'date', run_date=tweet_datetime, args=[asin, shortened_url])
+      scheduler_name = persed_arg['date']
+      scheduler_list[scheduler_name] = BlockingScheduler(timezone='Asia/Tokyo')
+      scheduler_list[scheduler_name].add_listener(job_listener, EVENT_JOB_EXECUTED)
+      target_product_idx_list[scheduler_name] = 0
 
-  scheduler.start()
+      scheduler_list[scheduler_name].add_job(post_tweet, 'interval', seconds=3, args=[asin_list, shortened_url_list, scheduler_name])
+
+  for key, scheduler in scheduler_list.items():
+    exec_datetime = datetime.datetime.strptime(key, '%Y-%m-%d')
+    now_datetime = datetime.datetime.now()
+    if exec_datetime.date() == now_datetime.date():
+      scheduler.start()
+    else:
+      delta = exec_datetime.replace(hour=7, minute=0, second=0) - now_datetime
+      time.sleep(delta.total_seconds())
+      scheduler.start()
 
 if __name__ == '__main__':
     main()
