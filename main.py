@@ -3,33 +3,30 @@ import json
 import datetime
 import re
 import requests
+import os
+from dotenv import load_dotenv
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pyshorteners import Shortener
 from amazon.paapi import AmazonAPI
 from requests_oauthlib import OAuth1
 
+load_dotenv()
+
 # PA-API情報
-ACCESS_KEY = '***REMOVED***'
-SECRET_KEY = '***REMOVED***'
-ASSOCIATE_ID = '***REMOVED***'
+ACCESS_KEY = os.getenv('ACCESS_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
+ASSOCIATE_ID = os.getenv('ASSOCIATE_ID')
 COUNTRY = 'JP'
 
 AMAZON_API = AmazonAPI(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY )
 
 
 # TwitterAPI情報
-# # テスト用
-# CONSUMER_KEY = '***REMOVED***'
-# CONSUMER_SECRET = '***REMOVED***'
-# ACCESS_TOKEN = '***REMOVED***'
-# ACCESS_TOKEN_SECRET = '***REMOVED***'
-
-# 本番用
-CONSUMER_KEY = '***REMOVED***'
-CONSUMER_SECRET = '***REMOVED***'
-ACCESS_TOKEN = '***REMOVED***'
-ACCESS_TOKEN_SECRET = '***REMOVED***'
+CONSUMER_KEY = os.getenv('CONSUMER_KEY')
+CONSUMER_SECRET = os.getenv('CONSUMER_SECRET')
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
+ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
 
 TWITTER_AUTH = OAuth1(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 TWITTER_API_URL = 'https://api.twitter.com/2/tweets'
