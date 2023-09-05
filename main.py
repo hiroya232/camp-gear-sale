@@ -75,6 +75,9 @@ def post_tweet(asin_list, shortened_url_list, scheduler_name):
             product_brand_notation_with_hashtag = (
                 "#" + product_brand_notation_without_white_space + " "
             )
+            product_brand_notation = product_brand_notation.replace(
+                " ", " ?"
+            )
         else:
             product_brand_notation_with_hashtag = "#" + product_brand_notation + " "
 
