@@ -110,23 +110,23 @@ def job_listener(event: JobExecutionEvent):
 def main():
   shortener = Shortener()
 
-  for index, arg in enumerate(sys.argv):
-    if index != 0:
-      persed_arg = (json.loads(arg))
+  with open(sys.argv[1], 'r') as file:
+    input_data_list = json.load(file)
 
-      url_list   = persed_arg['url_list']
-      asin_list          = []
-      shortened_url_list = []
-      for url in url_list:
-        asin_list.append(extract_asin_from_url(url))
-        shortened_url_list.append(shortener.tinyurl.short(url))
+  for input_data in input_data_list:
+    url_list   = input_data['url_list']
+    asin_list          = []
+    shortened_url_list = []
+    for url in url_list:
+      asin_list.append(extract_asin_from_url(url))
+      shortened_url_list.append(shortener.tinyurl.short(url))
 
-      scheduler_name = persed_arg['date']
-      scheduler_list[scheduler_name] = BlockingScheduler(timezone='Asia/Tokyo')
-      scheduler_list[scheduler_name].add_listener(job_listener, EVENT_JOB_EXECUTED)
-      target_product_idx_list[scheduler_name] = 0
+    scheduler_name = input_data['date']
+    scheduler_list[scheduler_name] = BlockingScheduler(timezone='Asia/Tokyo')
+    scheduler_list[scheduler_name].add_listener(job_listener, EVENT_JOB_EXECUTED)
+    target_product_idx_list[scheduler_name] = 0
 
-      scheduler_list[scheduler_name].add_job(post_tweet, 'interval', minutes=30, args=[asin_list, shortened_url_list, scheduler_name])
+    scheduler_list[scheduler_name].add_job(post_tweet, 'interval', minutes=30, args=[asin_list, shortened_url_list, scheduler_name])
 
   for key, scheduler in scheduler_list.items():
     exec_datetime = datetime.datetime.strptime(key, '%Y-%m-%d')
