@@ -64,7 +64,7 @@ def post_tweet(asin_list, shortened_url_list, scheduler_name):
   product_brand               = product_data.item_info.by_line_info.brand.display_value
   product_brand_notation_list = re.split('[()]', product_brand)
   for product_brand_notation in product_brand_notation_list:
-    if product_brand_notation == ' ':
+    if product_brand_notation == '':
       continue
     elif ' ' in product_brand_notation:
       product_brand_notation_without_white_space = product_brand_notation.replace(' ', '')
