@@ -126,7 +126,7 @@ def main():
       scheduler_list[scheduler_name].add_listener(job_listener, EVENT_JOB_EXECUTED)
       target_product_idx_list[scheduler_name] = 0
 
-      scheduler_list[scheduler_name].add_job(post_tweet, 'interval', seconds=3, args=[asin_list, shortened_url_list, scheduler_name])
+      scheduler_list[scheduler_name].add_job(post_tweet, 'interval', minutes=30, args=[asin_list, shortened_url_list, scheduler_name])
 
   for key, scheduler in scheduler_list.items():
     exec_datetime = datetime.datetime.strptime(key, '%Y-%m-%d')
