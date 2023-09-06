@@ -151,6 +151,7 @@ def main():
         exec_datetime = datetime.datetime.strptime(key, "%Y-%m-%d")
         now_datetime = datetime.datetime.now()
         if exec_datetime.date() == now_datetime.date():
+            post_tweet(asin_list, shortened_url_list, scheduler_name)
             scheduler.start()
         else:
             delta = exec_datetime.replace(hour=7, minute=0, second=0) - now_datetime
