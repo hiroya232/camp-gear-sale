@@ -142,7 +142,7 @@ def main():
         scheduler_list[scheduler_name].add_job(
             post_tweet,
             "interval",
-            minutes=30,
+            hours=1,
             args=[asin_list, shortened_url_list, scheduler_name],
         )
 
