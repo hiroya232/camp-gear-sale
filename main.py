@@ -34,8 +34,11 @@ ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 TWITTER_AUTH = OAuth1(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
 
+
 scheduler_list = {}
 target_product_index_list = {}
+
+shortener = Shortener()
 
 
 def extract_asin_from_url(url):
@@ -56,7 +59,6 @@ def post_tweet(asin_list, short_url_list, target_date):
     global target_product_index_list
 
     target_product_asin = asin_list[target_product_index_list[target_date]]
-
     product_data = AMAZON_API.get_items(item_ids=[target_product_asin])["data"][
         target_product_asin
     ]
@@ -102,7 +104,6 @@ def post_tweet(asin_list, short_url_list, target_date):
     }
 
     response = requests.post(POST_TWEET_ENDPOINT, auth=TWITTER_AUTH, json=payload)
-
     print(response.json())
 
     target_product_index_list[target_date] += 1
@@ -117,15 +118,16 @@ def completed_scheduler_listener(event: JobExecutionEvent):
 
 
 def main():
-    shortener = Shortener()
-
     with open(sys.argv[1], "r") as input_json:
         input_data_list = json.load(input_json)
 
     for input_data in input_data_list:
-        url_list = input_data["url_list"]
+        global target_product_index_list
+        target_product_index_list[target_date] = 0
+
         asin_list = []
         short_url_list = []
+        url_list = input_data["url_list"]
         for url in url_list:
             asin_list.append(extract_asin_from_url(url))
             short_url_list.append(shortener.tinyurl.short(url))
@@ -135,8 +137,6 @@ def main():
         scheduler_list[target_date].add_listener(
             completed_scheduler_listener, EVENT_JOB_EXECUTED
         )
-        target_product_index_list[target_date] = 0
-
         scheduler_list[target_date].add_job(
             post_tweet,
             "interval",
