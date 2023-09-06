@@ -32,10 +32,10 @@ ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 
 TWITTER_AUTH = OAuth1(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-TWITTER_API_URL = "https://api.twitter.com/2/tweets"
+POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
 
 scheduler_list = {}
-target_product_idx_list = {}
+target_product_index_list = {}
 
 
 def extract_asin_from_url(url):
@@ -52,37 +52,33 @@ def extract_asin_from_url(url):
     return None
 
 
-def post_tweet(asin_list, shortened_url_list, scheduler_name):
-    global target_product_idx_list
+def post_tweet(asin_list, short_url_list, target_date):
+    global target_product_index_list
 
-    target_product_asin = asin_list[target_product_idx_list[scheduler_name]]
+    target_product_asin = asin_list[target_product_index_list[target_date]]
 
     product_data = AMAZON_API.get_items(item_ids=[target_product_asin])["data"][
         target_product_asin
     ]
 
     product_title = product_data.item_info.title.display_value
-    product_discount_rate = product_data.offers.listings[0].price.savings.percentage
+    discount_rate = product_data.offers.listings[0].price.savings.percentage
 
-    product_brand = product_data.item_info.by_line_info.brand.display_value
-    product_brand_notation_list = re.split("[()]", product_brand)
-    for product_brand_notation in product_brand_notation_list:
-        if product_brand_notation == "":
+    brand = product_data.item_info.by_line_info.brand.display_value
+    brand_notation_list = re.split("[()]", brand)
+    for brand_notation in brand_notation_list:
+        if brand_notation == "":
             continue
-        elif " " in product_brand_notation:
-            product_brand_notation_without_white_space = product_brand_notation.replace(
-                " ", ""
-            )
-            product_brand_notation_with_hashtag = (
-                "#" + product_brand_notation_without_white_space + " "
-            )
-            product_brand_notation = product_brand_notation.replace(" ", " ?")
+        elif " " in brand_notation:
+            brand_notation_without_white_space = brand_notation.replace(" ", "")
+            brand_notation_with_hashtag = "#" + brand_notation_without_white_space + " "
+            brand_notation = brand_notation.replace(" ", " ?")
         else:
-            product_brand_notation_with_hashtag = "#" + product_brand_notation + " "
+            brand_notation_with_hashtag = "#" + brand_notation + " "
 
         product_title = re.sub(
-            product_brand_notation,
-            product_brand_notation_with_hashtag,
+            brand_notation,
+            brand_notation_with_hashtag,
             product_title,
             flags=re.IGNORECASE,
         )
@@ -92,12 +88,12 @@ def post_tweet(asin_list, shortened_url_list, scheduler_name):
 
     payload = {
         "text": f"""
-【{product_discount_rate}%オフ！】
+【{discount_rate}%オフ！】
 
 {product_title}
 
 詳細は🔽からチェック✔
-{shortened_url_list[target_product_idx_list[scheduler_name]]}
+{short_url_list[target_product_index_list[target_date]]}
 
 #キャンプ
 #アウトドア
@@ -105,57 +101,59 @@ def post_tweet(asin_list, shortened_url_list, scheduler_name):
     """
     }
 
-    response = requests.post(TWITTER_API_URL, auth=TWITTER_AUTH, json=payload)
+    response = requests.post(POST_TWEET_ENDPOINT, auth=TWITTER_AUTH, json=payload)
 
     print(response.json())
 
-    target_product_idx_list[scheduler_name] += 1
-    if target_product_idx_list[scheduler_name] >= len(asin_list):
-        return scheduler_name
+    target_product_index_list[target_date] += 1
+    if target_product_index_list[target_date] >= len(asin_list):
+        return target_date
 
 
-def job_listener(event: JobExecutionEvent):
-    finished_scheduler_name = event.retval
-    if finished_scheduler_name is not None:
-        scheduler_list[finished_scheduler_name].shutdown(wait=True)
+def completed_scheduler_listener(event: JobExecutionEvent):
+    completed_scheduler = event.retval
+    if completed_scheduler is not None:
+        scheduler_list[completed_scheduler].shutdown(wait=True)
 
 
 def main():
     shortener = Shortener()
 
-    with open(sys.argv[1], "r") as file:
-        input_data_list = json.load(file)
+    with open(sys.argv[1], "r") as input_json:
+        input_data_list = json.load(input_json)
 
     for input_data in input_data_list:
         url_list = input_data["url_list"]
         asin_list = []
-        shortened_url_list = []
+        short_url_list = []
         for url in url_list:
             asin_list.append(extract_asin_from_url(url))
-            shortened_url_list.append(shortener.tinyurl.short(url))
+            short_url_list.append(shortener.tinyurl.short(url))
 
-        scheduler_name = input_data["date"]
-        scheduler_list[scheduler_name] = BlockingScheduler(timezone="Asia/Tokyo")
-        scheduler_list[scheduler_name].add_listener(job_listener, EVENT_JOB_EXECUTED)
-        target_product_idx_list[scheduler_name] = 0
+        target_date = input_data["date"]
+        scheduler_list[target_date] = BlockingScheduler(timezone="Asia/Tokyo")
+        scheduler_list[target_date].add_listener(
+            completed_scheduler_listener, EVENT_JOB_EXECUTED
+        )
+        target_product_index_list[target_date] = 0
 
-        scheduler_list[scheduler_name].add_job(
+        scheduler_list[target_date].add_job(
             post_tweet,
             "interval",
             hours=1,
-            args=[asin_list, shortened_url_list, scheduler_name],
+            args=[asin_list, short_url_list, target_date],
         )
 
-    for key, scheduler in scheduler_list.items():
-        exec_datetime = datetime.datetime.strptime(key, "%Y-%m-%d").astimezone(
+    for date, scheduler in scheduler_list.items():
+        exec_date = datetime.datetime.strptime(date, "%Y-%m-%d").astimezone(
             ZoneInfo("Asia/Tokyo")
         )
         now_datetime = datetime.datetime.now(ZoneInfo("Asia/Tokyo"))
-        if exec_datetime.date() == now_datetime.date():
-            post_tweet(asin_list, shortened_url_list, scheduler_name)
+        if exec_date.date() == now_datetime.date():
+            post_tweet(asin_list, short_url_list, target_date)
             scheduler.start()
         else:
-            delta = exec_datetime.replace(hour=7, minute=0, second=0) - now_datetime
+            delta = exec_date.replace(hour=7, minute=0, second=0) - now_datetime
             time.sleep(delta.total_seconds())
             scheduler.start()
 
