@@ -3,6 +3,7 @@ import json
 import datetime
 import re
 import time
+from zoneinfo import ZoneInfo
 import requests
 import os
 from dotenv import load_dotenv
@@ -75,9 +76,7 @@ def post_tweet(asin_list, shortened_url_list, scheduler_name):
             product_brand_notation_with_hashtag = (
                 "#" + product_brand_notation_without_white_space + " "
             )
-            product_brand_notation = product_brand_notation.replace(
-                " ", " ?"
-            )
+            product_brand_notation = product_brand_notation.replace(" ", " ?")
         else:
             product_brand_notation_with_hashtag = "#" + product_brand_notation + " "
 
@@ -149,7 +148,7 @@ def main():
 
     for key, scheduler in scheduler_list.items():
         exec_datetime = datetime.datetime.strptime(key, "%Y-%m-%d")
-        now_datetime = datetime.datetime.now()
+        now_datetime = datetime.datetime.now(ZoneInfo("Asia/Tokyo"))
         if exec_datetime.date() == now_datetime.date():
             scheduler.start()
         else:
