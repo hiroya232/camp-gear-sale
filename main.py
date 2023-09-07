@@ -147,7 +147,9 @@ def main():
         )
 
     for key, scheduler in scheduler_list.items():
-        exec_datetime = datetime.datetime.strptime(key, "%Y-%m-%d")
+        exec_datetime = datetime.datetime.strptime(key, "%Y-%m-%d").astimezone(
+            ZoneInfo("Asia/Tokyo")
+        )
         now_datetime = datetime.datetime.now(ZoneInfo("Asia/Tokyo"))
         if exec_datetime.date() == now_datetime.date():
             post_tweet(asin_list, shortened_url_list, scheduler_name)
