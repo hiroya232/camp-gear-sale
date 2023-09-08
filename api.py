@@ -1,0 +1,22 @@
+import os
+from amazon.paapi import AmazonAPI
+from requests_oauthlib import OAuth1
+
+
+# PA-API情報
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+ASSOCIATE_ID = os.getenv("ASSOCIATE_ID")
+COUNTRY = "JP"
+
+AMAZON_API = AmazonAPI(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
+
+
+# TwitterAPI情報
+CONSUMER_KEY = os.getenv("CONSUMER_KEY")
+CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
+
+TWITTER_AUTH = OAuth1(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
