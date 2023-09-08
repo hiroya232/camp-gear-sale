@@ -2,7 +2,6 @@ import random
 import re
 
 from pyshorteners import Shortener
-from api import AMAZON_API
 
 shortener = Shortener()
 
@@ -72,13 +71,13 @@ def omit_product_title(product_title):
     return product_title
 
 
-def get_product_info():
+def get_product_info(amazon_api):
     is_found = False
     while not is_found:
         target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
         target_page = random.randint(1, 10)
 
-        product_data = AMAZON_API.search_items(
+        product_data = amazon_api.search_items(
             browse_node_id=BROWSE_NODE_LIST[target_browse_node_index],
             item_page=target_page,
             item_count=1,
