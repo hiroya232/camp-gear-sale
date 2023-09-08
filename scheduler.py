@@ -32,7 +32,7 @@ def create_scheduler(asin_list, short_url_list, target_date, job_function):
     scheduler_list[target_date].add_job(
         job_function,
         "interval",
-        seconds=3,
+        hours=1,
         args=[asin_list, short_url_list, target_date],
     )
 
