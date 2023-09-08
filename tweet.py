@@ -2,7 +2,6 @@ import requests
 from api import POST_TWEET_ENDPOINT, TWITTER_AUTH
 
 from product import get_product_info
-from scheduler import finished_scheduler, target_product_index_list
 
 
 def create_content(discount_rate, product_title, short_url):
@@ -22,20 +21,14 @@ def create_content(discount_rate, product_title, short_url):
     }
 
 
-def post_tweet(asin_list, short_url_list, target_date):
-    global target_product_index_list
-
-    discount_rate, product_title = get_product_info(
-        asin_list[target_product_index_list[target_date]]
-    )
+def post_tweet():
+    discount_rate, product_title, short_url = get_product_info()
 
     content = create_content(
         discount_rate,
         product_title,
-        short_url_list[target_product_index_list[target_date]],
+        short_url,
     )
 
     response = requests.post(POST_TWEET_ENDPOINT, auth=TWITTER_AUTH, json=content)
     print(response.json())
-
-    return finished_scheduler(target_date, asin_list)
