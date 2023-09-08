@@ -1,9 +1,22 @@
+import random
 import re
 
 from pyshorteners import Shortener
 from api import AMAZON_API
 
 shortener = Shortener()
+
+BROWSE_NODE_LIST = [
+    "2201151051",
+    "14916931",
+    "15325821",
+    "14916971",
+    "15325791",
+    "14916991",
+    "14917011",
+    "15325991",
+    "14917001",
+]
 
 
 def extract_asin_from_url(url):
@@ -59,16 +72,27 @@ def omit_product_title(product_title):
     return product_title
 
 
-def get_product_info(target_product_asin):
-    product_data = AMAZON_API.get_items(item_ids=[target_product_asin])["data"][
-        target_product_asin
-    ]
+def get_product_info():
+    is_found = False
+    while not is_found:
+        target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
+        target_page = random.randint(1, 10)
+
+        product_data = AMAZON_API.search_items(
+            browse_node_id=BROWSE_NODE_LIST[target_browse_node_index],
+            item_page=target_page,
+            item_count=1,
+        )["data"][0]
+
+        if product_data.offers.listings[0].price.savings is not None:
+            is_found = not is_found
 
     product_title = product_data.item_info.title.display_value
     discount_rate = product_data.offers.listings[0].price.savings.percentage
+    short_url = shortener.tinyurl.short(product_data.detail_page_url)
     brand = product_data.item_info.by_line_info.brand.display_value
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
 
-    return discount_rate, product_title
+    return discount_rate, product_title, short_url
