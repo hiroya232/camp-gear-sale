@@ -1,5 +1,5 @@
 import requests
-from api import POST_TWEET_ENDPOINT, TWITTER_AUTH
+from api import POST_TWEET_ENDPOINT
 
 from product import get_product_info
 
@@ -21,8 +21,8 @@ def create_content(discount_rate, product_title, short_url):
     }
 
 
-def post_tweet():
-    discount_rate, product_title, short_url = get_product_info()
+def post_tweet(amazon_api, twitter_auth):
+    discount_rate, product_title, short_url = get_product_info(amazon_api)
 
     content = create_content(
         discount_rate,
@@ -30,5 +30,5 @@ def post_tweet():
         short_url,
     )
 
-    response = requests.post(POST_TWEET_ENDPOINT, auth=TWITTER_AUTH, json=content)
+    response = requests.post(POST_TWEET_ENDPOINT, auth=twitter_auth, json=content)
     print(response.json())

@@ -1,17 +1,20 @@
 from dotenv import load_dotenv
+from api import auth_amazon_api, auth_twitter_api
 
 
 from scheduler import add_job, start_scheduler
 from tweet import post_tweet
 
 
-load_dotenv()
-
-
 def main():
-    add_job(post_tweet)
+    load_dotenv()
 
-    start_scheduler(post_tweet)
+    AMAZON_API = auth_amazon_api()
+    TWITTER_AUTH = auth_twitter_api()
+
+    add_job(post_tweet, AMAZON_API, TWITTER_AUTH)
+
+    start_scheduler(post_tweet, AMAZON_API, TWITTER_AUTH)
 
 
 if __name__ == "__main__":
