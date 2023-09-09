@@ -113,6 +113,8 @@ def get_product_info(amazon_api):
             product
             for product in product_list
             if product.offers.listings[0].price.savings is not None
+            and product.offers.listings[0].price.savings.percentage is not None
+            and product.item_info.by_line_info.brand.display_value is not None
         ]
         discounted_product_count = len(discounted_product_list)
         if discounted_product_count > 0:
