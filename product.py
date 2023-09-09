@@ -76,20 +76,28 @@ def get_product_info(amazon_api):
     while not is_found:
         target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
         target_page = random.randint(1, 10)
-
-        product_data = amazon_api.search_items(
+        product_list = amazon_api.search_items(
             browse_node_id=BROWSE_NODE_LIST[target_browse_node_index],
             item_page=target_page,
-            item_count=1,
-        )["data"][0]
+            item_count=10,
+        )["data"]
 
-        if product_data.offers.listings[0].price.savings is not None:
+        discounted_product_list = [
+            product
+            for product in product_list
+            if product.offers.listings[0].price.savings is not None
+        ]
+        discounted_product_count = len(discounted_product_list)
+        if discounted_product_count > 0:
+            discounted_product = discounted_product_list[
+                random.randint(0, discounted_product_count - 1)
+            ]
             is_found = not is_found
 
-    product_title = product_data.item_info.title.display_value
-    discount_rate = product_data.offers.listings[0].price.savings.percentage
-    short_url = shortener.tinyurl.short(product_data.detail_page_url)
-    brand = product_data.item_info.by_line_info.brand.display_value
+    product_title = discounted_product.item_info.title.display_value
+    discount_rate = discounted_product.offers.listings[0].price.savings.percentage
+    short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
+    brand = discounted_product.item_info.by_line_info.brand.display_value
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
