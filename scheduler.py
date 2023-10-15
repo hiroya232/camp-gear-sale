@@ -5,7 +5,7 @@ scheduler = BlockingScheduler(timezone="Asia/Tokyo")
 
 def add_job(job_function, amazon_api, twitter_auth):
     scheduler.add_job(
-        job_function, "interval", minutes=45, args=[amazon_api, twitter_auth]
+        job_function, "interval", minutes=15, args=[amazon_api, twitter_auth]
     )
 
 
