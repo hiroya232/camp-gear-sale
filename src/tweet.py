@@ -1,4 +1,6 @@
 import requests
+from requests.exceptions import RequestException
+
 from api import POST_TWEET_ENDPOINT
 
 from product import get_product_info
@@ -30,5 +32,8 @@ def post_tweet(amazon_api, twitter_auth):
         short_url,
     )
 
-    response = requests.post(POST_TWEET_ENDPOINT, auth=twitter_auth, json=content)
-    print(response.json())
+    try:
+        response = requests.post(POST_TWEET_ENDPOINT, auth=twitter_auth, json=content)
+        print(response.json())
+    except RequestException as e:
+        logging.error(f"Twitter API Request failed: {e}")
