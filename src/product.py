@@ -45,30 +45,6 @@ BROWSE_NODE_LIST = [
 ]
 
 
-def extract_asin_from_url(url):
-    # 通常の商品ページのURLからASINを抽出
-    match = re.search(r"/dp/(\w{10})", url)
-    if match:
-        return match.group(1)
-
-    # 別の形式のURLからASINを抽出
-    match = re.search(r"/gp/product/(\w{10})", url)
-    if match:
-        return match.group(1)
-
-    return None
-
-
-def get_asin_and_short_url_list(url_list):
-    asin_list = []
-    short_url_list = []
-    for url in url_list:
-        asin_list.append(extract_asin_from_url(url))
-        short_url_list.append(shortener.tinyurl.short(url))
-
-    return asin_list, short_url_list
-
-
 def hashtagging_brand_names_in_product_titie(product_title, brand):
     brand_notation_list = re.split("[()]", brand)
     for brand_notation in brand_notation_list:
