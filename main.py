@@ -1,7 +1,9 @@
 from dotenv import load_dotenv
+import sys
+
+sys.path.append("src")
+
 from api import auth_amazon_api, auth_twitter_api
-
-
 from scheduler import add_job, start_scheduler
 from tweet import post_tweet
 
