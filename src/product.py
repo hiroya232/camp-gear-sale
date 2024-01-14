@@ -101,7 +101,6 @@ def get_product_info():
             discounted_product = discounted_product_list[
                 random.randint(0, discounted_product_count - 1)
             ]
-            is_found = not is_found
 
             product_title = discounted_product.item_info.title.display_value
             discount_rate = discounted_product.offers.listings[
@@ -109,6 +108,8 @@ def get_product_info():
             ].price.savings.percentage
             short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
             brand = discounted_product.item_info.by_line_info.brand.display_value
+
+            is_found = not is_found
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
