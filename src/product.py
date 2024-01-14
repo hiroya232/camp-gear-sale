@@ -3,7 +3,8 @@ import re
 
 from pyshorteners import Shortener
 
-shortener = Shortener()
+from api import auth_amazon_api
+
 
 BROWSE_NODE_LIST = [
     "15325701",  # キャンプ用グリル・焚火台
@@ -45,30 +46,6 @@ BROWSE_NODE_LIST = [
 ]
 
 
-def extract_asin_from_url(url):
-    # 通常の商品ページのURLからASINを抽出
-    match = re.search(r"/dp/(\w{10})", url)
-    if match:
-        return match.group(1)
-
-    # 別の形式のURLからASINを抽出
-    match = re.search(r"/gp/product/(\w{10})", url)
-    if match:
-        return match.group(1)
-
-    return None
-
-
-def get_asin_and_short_url_list(url_list):
-    asin_list = []
-    short_url_list = []
-    for url in url_list:
-        asin_list.append(extract_asin_from_url(url))
-        short_url_list.append(shortener.tinyurl.short(url))
-
-    return asin_list, short_url_list
-
-
 def hashtagging_brand_names_in_product_titie(product_title, brand):
     brand_notation_list = re.split("[()]", brand)
     for brand_notation in brand_notation_list:
@@ -98,7 +75,10 @@ def omit_product_title(product_title):
     return product_title
 
 
-def get_product_info(amazon_api):
+def get_product_info():
+    shortener = Shortener()
+    amazon_api = auth_amazon_api()
+
     is_found = False
     while not is_found:
         target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
@@ -121,14 +101,17 @@ def get_product_info(amazon_api):
             discounted_product = discounted_product_list[
                 random.randint(0, discounted_product_count - 1)
             ]
-            is_found = not is_found
 
-    product_title = discounted_product.item_info.title.display_value
-    discount_rate = discounted_product.offers.listings[0].price.savings.percentage
-    short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
-    brand = discounted_product.item_info.by_line_info.brand.display_value
+            product_title = discounted_product.item_info.title.display_value
+            discount_rate = discounted_product.offers.listings[
+                0
+            ].price.savings.percentage
+            short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
+            brand = discounted_product.item_info.by_line_info.brand.display_value
+
+            is_found = not is_found
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
 
-    return discount_rate, product_title, short_url
+    return [discount_rate, product_title, short_url]
