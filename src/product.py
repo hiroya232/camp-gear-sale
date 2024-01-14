@@ -3,7 +3,8 @@ import re
 
 from pyshorteners import Shortener
 
-shortener = Shortener()
+from api import auth_amazon_api
+
 
 BROWSE_NODE_LIST = [
     "15325701",  # キャンプ用グリル・焚火台
@@ -74,7 +75,10 @@ def omit_product_title(product_title):
     return product_title
 
 
-def get_product_info(amazon_api):
+def get_product_info():
+    shortener = Shortener()
+    amazon_api = auth_amazon_api()
+
     is_found = False
     while not is_found:
         target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
@@ -99,12 +103,14 @@ def get_product_info(amazon_api):
             ]
             is_found = not is_found
 
-    product_title = discounted_product.item_info.title.display_value
-    discount_rate = discounted_product.offers.listings[0].price.savings.percentage
-    short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
-    brand = discounted_product.item_info.by_line_info.brand.display_value
+            product_title = discounted_product.item_info.title.display_value
+            discount_rate = discounted_product.offers.listings[
+                0
+            ].price.savings.percentage
+            short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
+            brand = discounted_product.item_info.by_line_info.brand.display_value
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
 
-    return discount_rate, product_title, short_url
+    return [discount_rate, product_title, short_url]
