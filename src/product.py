@@ -1,14 +1,9 @@
 import random
 import re
-import time
-import logging
-from requests.exceptions import RequestException
-
 
 from pyshorteners import Shortener
 
 shortener = Shortener()
-logging.basicConfig(filename='error.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 BROWSE_NODE_LIST = [
     "15325701",  # キャンプ用グリル・焚火台
@@ -108,44 +103,30 @@ def get_product_info(amazon_api):
     while not is_found:
         target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
         target_page = random.randint(1, 10)
+        product_list = amazon_api.search_items(
+            browse_node_id=BROWSE_NODE_LIST[target_browse_node_index],
+            item_page=target_page,
+            item_count=10,
+        )["data"]
 
-        try:
-            product_list = amazon_api.search_items(
-                browse_node_id=BROWSE_NODE_LIST[target_browse_node_index],
-                item_page=target_page,
-                item_count=10,
-            )["data"]
-
-
-            discounted_product_list = [
-                product
-                for product in product_list
-                if product.offers.listings[0].price.savings is not None
-                and product.offers.listings[0].price.savings.percentage is not None
-                and product.item_info.by_line_info.brand.display_value is not None
+        discounted_product_list = [
+            product
+            for product in product_list
+            if product.offers.listings[0].price.savings is not None
+            and product.offers.listings[0].price.savings.percentage is not None
+            and product.item_info.by_line_info.brand.display_value is not None
+        ]
+        discounted_product_count = len(discounted_product_list)
+        if discounted_product_count > 0:
+            discounted_product = discounted_product_list[
+                random.randint(0, discounted_product_count - 1)
             ]
-
-            discounted_product_count = len(discounted_product_list)
-            if discounted_product_count > 0:
-                discounted_product = discounted_product_list[
-                    random.randint(0, discounted_product_count - 1)
-                ]
-
-            product_title = discounted_product.item_info.title.display_value
-            discount_rate = discounted_product.offers.listings[0].price.savings.percentage
-            short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
-            brand = discounted_product.item_info.by_line_info.brand.display_value
-
             is_found = not is_found
-        except RequestException as e:
-            logging.error(f"Amazon API request failed: {e}")
-            continue
-        except TypeError as e:
-            logging.error(f"Type Error: {e}")
-            continue
-        finally:
-            # PA-APIのリクエスト回数制限（1リクエスト/秒）対策
-            time.sleep(1)
+
+    product_title = discounted_product.item_info.title.display_value
+    discount_rate = discounted_product.offers.listings[0].price.savings.percentage
+    short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
+    brand = discounted_product.item_info.by_line_info.brand.display_value
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
