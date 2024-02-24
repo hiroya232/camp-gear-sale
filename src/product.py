@@ -94,6 +94,7 @@ def get_product_info():
             for product in product_list
             if product.offers.listings[0].price.savings is not None
             and product.offers.listings[0].price.savings.percentage is not None
+            and product.offers.listings[0].price.savings.amount is not None
             and product.item_info.by_line_info.brand.display_value is not None
         ]
         discounted_product_count = len(discounted_product_list)
@@ -106,6 +107,9 @@ def get_product_info():
             discount_rate = discounted_product.offers.listings[
                 0
             ].price.savings.percentage
+            discount_amount = round(
+                discounted_product.offers.listings[0].price.savings.amount
+            )
             short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
             brand = discounted_product.item_info.by_line_info.brand.display_value
 
@@ -114,4 +118,4 @@ def get_product_info():
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
 
-    return [discount_rate, product_title, short_url]
+    return [discount_rate, discount_amount, product_title, short_url]

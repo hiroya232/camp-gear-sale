@@ -5,10 +5,10 @@ from api import auth_twitter_api, POST_TWEET_ENDPOINT
 from product import get_product_info
 
 
-def create_content(discount_rate, product_title, short_url):
+def create_content(discount_rate, discount_amount, product_title, short_url):
     return {
         "text": f"""
-【{discount_rate}%オフ！】
+【{discount_rate}%({discount_amount}円)オフ！】
 
 {product_title}
 
@@ -25,10 +25,11 @@ def create_content(discount_rate, product_title, short_url):
 def post_tweet():
     TWITTER_AUTH = auth_twitter_api()
 
-    discount_rate, product_title, short_url = get_product_info()
+    discount_rate, discount_amount, product_title, short_url = get_product_info()
 
     content = create_content(
         discount_rate,
+        discount_amount,
         product_title,
         short_url,
     )
