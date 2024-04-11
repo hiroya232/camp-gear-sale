@@ -4,6 +4,7 @@ from requests_oauthlib import OAuth1
 
 
 POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
+MEDIA_UPLOAD_ENDPOINT = "https://upload.twitter.com/1.1/media/upload.json"
 
 
 def auth_amazon_api():

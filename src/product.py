@@ -1,5 +1,6 @@
 import random
 import re
+import requests
 
 from pyshorteners import Shortener
 
@@ -110,6 +111,7 @@ def get_product_info():
             discount_amount = round(
                 discounted_product.offers.listings[0].price.savings.amount
             )
+            image = requests.get(discounted_product.images.primary.large.url).content
             short_url = shortener.tinyurl.short(discounted_product.detail_page_url)
             brand = discounted_product.item_info.by_line_info.brand.display_value
 
@@ -118,4 +120,4 @@ def get_product_info():
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
     product_title = omit_product_title(product_title)
 
-    return [discount_rate, discount_amount, product_title, short_url]
+    return [discount_rate, discount_amount, product_title, short_url, image]
