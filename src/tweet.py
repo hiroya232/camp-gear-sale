@@ -6,11 +6,11 @@ from product import get_product_info
 
 def create_content(discount_rate, discount_amount, product_title, short_url):
     return f"""
-【{discount_rate}%({discount_amount}円)オフ！】
+🏷️ {discount_rate}%🈹 {discount_amount}円オフ！ 🏷️
 
 {product_title}
 
-詳細は🔽からチェック✔
+詳細は下記リンクからチェック☑️
 {short_url}
 
 #キャンプ
