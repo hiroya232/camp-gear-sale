@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from product import (
+from domain.product import (
     hashtagging_brand_names_in_product_titie,
     omit_product_title,
     get_product_info,

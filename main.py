@@ -3,8 +3,8 @@ sys.path.append("src")
 
 from dotenv import load_dotenv
 
-from scheduler import add_job, start_scheduler
-from tweet import post_tweet
+from application.scheduler import add_job, start_scheduler
+from domain.tweet import post_tweet
 
 
 def main():

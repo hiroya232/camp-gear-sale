@@ -4,7 +4,7 @@ import requests
 
 from pyshorteners import Shortener
 
-from api import auth_amazon_api
+from infrastructure.api import auth_amazon_api
 
 
 BROWSE_NODE_LIST = [

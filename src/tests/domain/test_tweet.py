@@ -1,6 +1,6 @@
 import unittest
 
-from tweet import create_content
+from domain.tweet import create_content
 
 
 class TestTweet(unittest.TestCase):

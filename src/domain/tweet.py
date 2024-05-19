@@ -1,7 +1,7 @@
 import requests
 
-from api import auth_twitter_api, POST_TWEET_ENDPOINT, MEDIA_UPLOAD_ENDPOINT
-from product import get_product_info, shorten_product_title
+from infrastructure.api import auth_twitter_api, POST_TWEET_ENDPOINT, MEDIA_UPLOAD_ENDPOINT
+from domain.product import get_product_info, shorten_product_title
 
 POST_MAX_LENGTH = 140
 POST_TEMPLATE_TOTAL_LENGTH = 63  # 固定の文字列 + 三点リーダ「…」の合計文字数
