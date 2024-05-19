@@ -69,11 +69,8 @@ def hashtagging_brand_names_in_product_titie(product_title, brand):
     return product_title
 
 
-def omit_product_title(product_title):
-    if len(product_title) >= 60:
-        product_title = product_title[:60] + "…"
-
-    return product_title
+def shorten_product_title(product_title, excess_length):
+    return product_title[:-excess_length] + "…"
 
 
 def get_product_info():
@@ -118,6 +115,5 @@ def get_product_info():
             is_found = not is_found
 
     product_title = hashtagging_brand_names_in_product_titie(product_title, brand)
-    product_title = omit_product_title(product_title)
 
     return [discount_rate, discount_amount, product_title, short_url, image]
