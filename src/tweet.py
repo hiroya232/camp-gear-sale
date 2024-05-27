@@ -1,10 +1,22 @@
 import requests
 
 from api import auth_twitter_api, POST_TWEET_ENDPOINT, MEDIA_UPLOAD_ENDPOINT
-from product import get_product_info
+from product import get_product_info, shorten_product_title
+
+POST_MAX_LENGTH = 140
+POST_TEMPLATE_TOTAL_LENGTH = 63  # 固定の文字列 + 三点リーダ「…」の合計文字数
 
 
 def create_content(discount_rate, discount_amount, product_title, short_url):
+    product_info_total_length = len(
+        str(discount_rate) + str(discount_amount) + product_title + short_url
+    )
+    post_total_length = POST_TEMPLATE_TOTAL_LENGTH + product_info_total_length
+
+    if post_total_length > POST_MAX_LENGTH:
+        excess_length = post_total_length - POST_MAX_LENGTH
+        product_title = shorten_product_title(product_title, excess_length)
+
     return f"""
 🏷️ {discount_rate}%🈹 {discount_amount}円オフ！ 🏷️
 
