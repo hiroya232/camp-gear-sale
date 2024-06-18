@@ -24,6 +24,7 @@ class Post:
 
     def add_hashtags(self, input_text, hashtag_targets):
         brand_notation_list = re.split("[()]", hashtag_targets)
+        hashtagged_text = input_text
         for brand_notation in brand_notation_list:
             if brand_notation == "":
                 continue
@@ -39,7 +40,7 @@ class Post:
             hashtagged_text = re.sub(
                 brand_notation,
                 brand_notation_with_hashtag,
-                input_text,
+                hashtagged_text,
                 flags=re.IGNORECASE,
             )
 
