@@ -4,6 +4,7 @@ import sys
 sys.path.append("src")
 
 from dotenv import load_dotenv
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase
 from infrastructure.repository.product_repository import ProductRepository
@@ -21,7 +22,10 @@ def main():
     post_camp_gear_sale_use_case = PostCampGearSaleUseCase(
         product_repository, post_service
     )
-    post_camp_gear_sale_use_case.handle()
+
+    scheduler = BlockingScheduler(timezone="Asia/Tokyo")
+    scheduler.add_job(post_camp_gear_sale_use_case.handle, "interval", minutes=30)
+    scheduler.start()
 
 
 if __name__ == "__main__":
