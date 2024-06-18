@@ -1,8 +1,3 @@
-import sys
-
-
-sys.path.append("src")
-
 from dotenv import load_dotenv
 from apscheduler.schedulers.blocking import BlockingScheduler
 
