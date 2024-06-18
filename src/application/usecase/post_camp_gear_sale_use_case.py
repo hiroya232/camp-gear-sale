@@ -1,5 +1,3 @@
-from apscheduler.schedulers.blocking import BlockingScheduler
-
 from domain.post import Post
 
 
@@ -34,14 +32,4 @@ class PostCampGearSaleUseCase:
             ]
         )
 
-        scheduler = BlockingScheduler(timezone="Asia/Tokyo")
-        scheduler.add_job(
-            self.post_service.post,
-            "interval",
-            minutes=30,
-            args=[
-                post_content,
-                product.image,
-            ],
-        )
-        scheduler.start()
+        self.post_service.post(post_content, product.image)
