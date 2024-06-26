@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import re
+from textwrap import dedent
 
 
 @dataclass(init=False, frozen=False)
@@ -50,18 +51,20 @@ class Post:
         return target_content[:-shorten_length] + "…"
 
     def create_content(self, dynamic_content_list):
-        return f"""
-🏷️ {dynamic_content_list[0]}%🈹 {dynamic_content_list[1]}円オフ！ 🏷️
+        return dedent(
+            f"""
+                🏷️ {dynamic_content_list[0]}%🈹 {dynamic_content_list[1]}円オフ！ 🏷️
 
-{dynamic_content_list[2]}
+                {dynamic_content_list[2]}
 
-詳細は下記リンクからチェック☑️
-{dynamic_content_list[3]}
+                詳細は下記リンクからチェック☑️
+                {dynamic_content_list[3]}
 
-#キャンプ
-#アウトドア
-#キャンプ好きと繋がりたい
+                #キャンプ
+                #アウトドア
+                #キャンプ好きと繋がりたい
             """
+        )
 
     def create_post(self, content, media_id):
         return {"text": content, "media": {"media_ids": [media_id]}}

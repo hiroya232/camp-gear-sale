@@ -1,3 +1,4 @@
+from textwrap import dedent
 import unittest
 
 from domain.post import Post
@@ -105,7 +106,20 @@ class TestPost(unittest.TestCase):
                 "テスト商品1",
                 "http://tinyurl.com/test",
             ],
-            "expected": "\n🏷️ 10%🈹 1000円オフ！ 🏷️\n\nテスト商品1\n\n詳細は下記リンクからチェック☑️\nhttp://tinyurl.com/test\n\n#キャンプ\n#アウトドア\n#キャンプ好きと繋がりたい\n            ",
+            "expected": dedent(
+                f"""
+                    🏷️ 10%🈹 1000円オフ！ 🏷️
+
+                    テスト商品1
+
+                    詳細は下記リンクからチェック☑️
+                    http://tinyurl.com/test
+
+                    #キャンプ
+                    #アウトドア
+                    #キャンプ好きと繋がりたい
+                """
+            ),
         }
 
         result = self.post.create_content(
