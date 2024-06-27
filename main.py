@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -8,6 +10,8 @@ from infrastructure.service.post_service import PostService
 
 
 load_dotenv()
+app_env = os.getenv("APP_ENV", "local")
+load_dotenv(f".env.{app_env}", override=True)
 
 
 def main():
