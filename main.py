@@ -1,18 +1,30 @@
-import sys
-sys.path.append("src")
+import os
 
 from dotenv import load_dotenv
+from apscheduler.schedulers.blocking import BlockingScheduler
 
-from scheduler import add_job, start_scheduler
-from tweet import post_tweet
+from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase
+from infrastructure.repository.product_repository import ProductRepository
+from infrastructure.service.product_service import ProductService
+from infrastructure.service.post_service import PostService
+
+
+load_dotenv()
+app_env = os.getenv("APP_ENV", "local")
+load_dotenv(f".env.{app_env}", override=True)
 
 
 def main():
-    load_dotenv()
+    product_repository = ProductRepository(ProductService())
+    post_service = PostService()
 
-    add_job(post_tweet)
+    post_camp_gear_sale_use_case = PostCampGearSaleUseCase(
+        product_repository, post_service
+    )
 
-    start_scheduler(post_tweet)
+    scheduler = BlockingScheduler(timezone="Asia/Tokyo")
+    scheduler.add_job(post_camp_gear_sale_use_case.handle, "interval", minutes=30)
+    scheduler.start()
 
 
 if __name__ == "__main__":

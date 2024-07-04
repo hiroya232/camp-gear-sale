@@ -3,6 +3,8 @@ services:
     restart: always
     build: .
     container_name: 'camp-gear-sale-app'
+    environment:
+      - PYTHONPATH=/workspace/src:${PYTHONPATH}
     tty: true
     volumes:
       - .:/workspace/
