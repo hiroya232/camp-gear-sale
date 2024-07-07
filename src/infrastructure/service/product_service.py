@@ -71,6 +71,7 @@ class ProductService:
                 browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
                 item_page=target_page,
                 item_count=10,
+                min_saving_percent=1,
             )["data"]
 
             discounted_product_list = [
