@@ -1,7 +1,7 @@
 import os
 import random
 
-from amazon.paapi import AmazonAPI
+from amazon_paapi import AmazonApi
 from pyshorteners import Shortener
 import requests
 
@@ -56,7 +56,7 @@ class ProductService:
         ASSOCIATE_ID = os.getenv("ASSOCIATE_ID")
         COUNTRY = "JP"
 
-        return AmazonAPI(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
+        return AmazonApi(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
 
     def fetch_product_info(self):
         shortener = Shortener()
@@ -72,7 +72,7 @@ class ProductService:
                 item_page=target_page,
                 item_count=10,
                 min_saving_percent=1,
-            )["data"]
+            ).items
 
             discounted_product_list = [
                 product
