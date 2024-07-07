@@ -58,7 +58,7 @@ class ProductService:
 
         return AmazonApi(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
 
-    def fetch_product_info(self):
+    def fetch_sale_product(self):
         shortener = Shortener()
 
         amazon_api = self.auth_amazon_api()
@@ -67,39 +67,37 @@ class ProductService:
         while not is_found:
             target_browse_node_index = random.randint(0, len(self.BROWSE_NODE_LIST) - 1)
             target_page = random.randint(1, 10)
-            product_list = amazon_api.search_items(
+            sale_product_list = amazon_api.search_items(
                 browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
                 item_page=target_page,
                 item_count=10,
                 min_saving_percent=1,
             ).items
 
-            discounted_product_list = [
-                product
-                for product in product_list
-                if product.offers.listings[0].price.savings is not None
-                and product.offers.listings[0].price.savings.percentage is not None
-                and product.offers.listings[0].price.savings.amount is not None
-                and product.item_info.by_line_info.brand.display_value is not None
+            sale_product_list = [
+                sale_product
+                for sale_product in sale_product_list
+                if sale_product.offers.listings[0].price.savings is not None
+                and sale_product.offers.listings[0].price.savings.percentage is not None
+                and sale_product.offers.listings[0].price.savings.amount is not None
+                and sale_product.item_info.by_line_info.brand.display_value is not None
             ]
-            discounted_product = len(discounted_product_list)
-            if discounted_product > 0:
-                discounted_product = discounted_product_list[
-                    random.randint(0, discounted_product - 1)
+
+            sale_product_count = len(sale_product_list)
+            if sale_product_count > 0:
+                sale_product = sale_product_list[
+                    random.randint(0, sale_product_count - 1)
                 ]
-                product_title = discounted_product.item_info.title.display_value
-                discount_rate = discounted_product.offers.listings[
-                    0
-                ].price.savings.percentage
+
+                product_title = sale_product.item_info.title.display_value
+                discount_rate = sale_product.offers.listings[0].price.savings.percentage
                 discount_amount = round(
-                    discounted_product.offers.listings[0].price.savings.amount
+                    sale_product.offers.listings[0].price.savings.amount
                 )
-                image = requests.get(
-                    discounted_product.images.primary.large.url
-                ).content
-                full_url = discounted_product.detail_page_url
+                image = requests.get(sale_product.images.primary.large.url).content
+                full_url = sale_product.detail_page_url
                 short_url = shortener.tinyurl.short(full_url)
-                brand = discounted_product.item_info.by_line_info.brand.display_value
+                brand = sale_product.item_info.by_line_info.brand.display_value
                 is_found = not is_found
 
         return Product(

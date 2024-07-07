@@ -8,7 +8,7 @@ class PostCampGearSaleUseCase:
         self.post_service = post_service
 
     def handle(self):
-        product = self.product_repository.fetch_product_info()
+        product = self.product_repository.fetch_sale_product()
 
         post = Post()
         product.title = post.add_hashtags(product.title, product.brand)
