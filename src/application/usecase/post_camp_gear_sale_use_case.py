@@ -1,3 +1,6 @@
+from pyshorteners import Shortener
+
+
 from domain.post import Post
 
 
@@ -22,6 +25,9 @@ class PostCampGearSaleUseCase:
         )
         if excess_length > 0:
             product.title = post.shorten_content(product.title, excess_length)
+
+        shortener = Shortener()
+        product.short_url = shortener.tinyurl.short(product.full_url)
 
         post_content = post.create_content(
             [

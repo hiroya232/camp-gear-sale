@@ -1,8 +1,8 @@
 import os
 import random
 
+
 from amazon_paapi import AmazonApi
-from pyshorteners import Shortener
 import requests
 
 
@@ -59,8 +59,6 @@ class ProductService:
         return AmazonApi(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
 
     def fetch_sale_product(self):
-        shortener = Shortener()
-
         amazon_api = self.auth_amazon_api()
 
         is_found = False
@@ -94,7 +92,7 @@ class ProductService:
             title=sale_product.item_info.title.display_value,
             brand=sale_product.item_info.by_line_info.brand.display_value,
             full_url=sale_product.detail_page_url,
-            short_url=shortener.tinyurl.short(sale_product.detail_page_url),
+            short_url="",
             discount_rate=sale_product.offers.listings[0].price.savings.percentage,
             discount_amount=round(sale_product.offers.listings[0].price.savings.amount),
             image=requests.get(sale_product.images.primary.large.url).content,
