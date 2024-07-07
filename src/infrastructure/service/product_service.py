@@ -88,24 +88,14 @@ class ProductService:
                 sale_product = sale_product_list[
                     random.randint(0, sale_product_count - 1)
                 ]
-
-                product_title = sale_product.item_info.title.display_value
-                discount_rate = sale_product.offers.listings[0].price.savings.percentage
-                discount_amount = round(
-                    sale_product.offers.listings[0].price.savings.amount
-                )
-                image = requests.get(sale_product.images.primary.large.url).content
-                full_url = sale_product.detail_page_url
-                short_url = shortener.tinyurl.short(full_url)
-                brand = sale_product.item_info.by_line_info.brand.display_value
                 is_found = not is_found
 
         return Product(
-            title=product_title,
-            brand=brand,
-            full_url=full_url,
-            short_url=short_url,
-            discount_rate=discount_rate,
-            discount_amount=discount_amount,
-            image=image,
+            title=sale_product.item_info.title.display_value,
+            brand=sale_product.item_info.by_line_info.brand.display_value,
+            full_url=sale_product.detail_page_url,
+            short_url=shortener.tinyurl.short(sale_product.detail_page_url),
+            discount_rate=sale_product.offers.listings[0].price.savings.percentage,
+            discount_amount=round(sale_product.offers.listings[0].price.savings.amount),
+            image=requests.get(sale_product.images.primary.large.url).content,
         )
