@@ -10,7 +10,7 @@ class Post:
     media: bytes
 
     POST_MAX_LENGTH = 140
-    POST_TEMPLATE_LENGTH = 63  # 固定の文字列 + 三点リーダ「…」の合計文字数
+    POST_TEMPLATE_LENGTH = 79  # 固定の文字列 + 三点リーダ「…」の合計文字数
 
     def calculate_excess_length(self, dynamic_content_list):
         dynamic_contents_length = sum(len(el) for el in dynamic_content_list)
@@ -63,6 +63,7 @@ class Post:
                 #キャンプ
                 #アウトドア
                 #キャンプ好きと繋がりたい
+                #Amazonプライムデーセール
             """
         )
 
