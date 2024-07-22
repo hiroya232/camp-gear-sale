@@ -21,29 +21,11 @@ class Post:
 
         return 0
 
-    def add_hashtags(self, input_text, hashtag_targets):
-        brand_notation_list = re.split("[()]", hashtag_targets)
-        hashtagged_text = input_text
-        for brand_notation in brand_notation_list:
-            if brand_notation == "":
-                continue
-            elif " " in brand_notation:
-                brand_notation_without_white_space = brand_notation.replace(" ", "")
-                brand_notation_with_hashtag = (
-                    "#" + brand_notation_without_white_space + " "
-                )
-                brand_notation = brand_notation.replace(" ", " ?")
-            else:
-                brand_notation_with_hashtag = "#" + brand_notation + " "
-
-            hashtagged_text = re.sub(
-                brand_notation,
-                brand_notation_with_hashtag,
-                hashtagged_text,
-                flags=re.IGNORECASE,
-            )
-
-        return hashtagged_text
+    def add_hashtags(self, target_text, hashtag_target):
+        return target_text.replace(
+            hashtag_target,
+            "#" + hashtag_target + " ",
+        )
 
     def shorten_content(self, target_content, shorten_length):
         return target_content[:-shorten_length] + "…"
