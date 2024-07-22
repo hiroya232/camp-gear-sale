@@ -16,12 +16,10 @@ class Post:
         dynamic_contents_length = sum(len(el) for el in dynamic_content_list)
         post_length = self.POST_TEMPLATE_LENGTH + dynamic_contents_length
 
-        excess_length = 0
         if post_length > self.POST_MAX_LENGTH:
-            excess_length = post_length - self.POST_MAX_LENGTH
-            return excess_length
+            return post_length - self.POST_MAX_LENGTH
 
-        return excess_length
+        return 0
 
     def add_hashtags(self, input_text, hashtag_targets):
         brand_notation_list = re.split("[()]", hashtag_targets)
