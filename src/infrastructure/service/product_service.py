@@ -1,10 +1,8 @@
 import os
 import random
 
-
 from amazon_paapi import AmazonApi
 import requests
-
 
 from domain.product import Product
 

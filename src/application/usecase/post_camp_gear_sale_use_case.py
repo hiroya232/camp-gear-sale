@@ -1,8 +1,6 @@
 import re
 
-
 from pyshorteners import Shortener
-
 
 from domain.post import Post
 
