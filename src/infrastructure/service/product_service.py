@@ -1,10 +1,8 @@
 import os
 import random
 
-from amazon.paapi import AmazonAPI
-from pyshorteners import Shortener
+from amazon_paapi import AmazonApi
 import requests
-
 
 from domain.product import Product
 
@@ -56,57 +54,44 @@ class ProductService:
         ASSOCIATE_ID = os.getenv("ASSOCIATE_ID")
         COUNTRY = "JP"
 
-        return AmazonAPI(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
+        return AmazonApi(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
 
-    def fetch_product_info(self):
-        shortener = Shortener()
-
+    def fetch_sale_product(self):
         amazon_api = self.auth_amazon_api()
 
         is_found = False
         while not is_found:
             target_browse_node_index = random.randint(0, len(self.BROWSE_NODE_LIST) - 1)
             target_page = random.randint(1, 10)
-            product_list = amazon_api.search_items(
+            sale_product_list = amazon_api.search_items(
                 browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
                 item_page=target_page,
                 item_count=10,
-            )["data"]
+                min_saving_percent=1,
+            ).items
 
-            discounted_product_list = [
-                product
-                for product in product_list
-                if product.offers.listings[0].price.savings is not None
-                and product.offers.listings[0].price.savings.percentage is not None
-                and product.offers.listings[0].price.savings.amount is not None
-                and product.item_info.by_line_info.brand.display_value is not None
+            sale_product_list = [
+                sale_product
+                for sale_product in sale_product_list
+                if sale_product.offers.listings[0].price.savings is not None
+                and sale_product.offers.listings[0].price.savings.percentage is not None
+                and sale_product.offers.listings[0].price.savings.amount is not None
+                and sale_product.item_info.by_line_info.brand.display_value is not None
             ]
-            discounted_product = len(discounted_product_list)
-            if discounted_product > 0:
-                discounted_product = discounted_product_list[
-                    random.randint(0, discounted_product - 1)
+
+            sale_product_count = len(sale_product_list)
+            if sale_product_count > 0:
+                sale_product = sale_product_list[
+                    random.randint(0, sale_product_count - 1)
                 ]
-                product_title = discounted_product.item_info.title.display_value
-                discount_rate = discounted_product.offers.listings[
-                    0
-                ].price.savings.percentage
-                discount_amount = round(
-                    discounted_product.offers.listings[0].price.savings.amount
-                )
-                image = requests.get(
-                    discounted_product.images.primary.large.url
-                ).content
-                full_url = discounted_product.detail_page_url
-                short_url = shortener.tinyurl.short(full_url)
-                brand = discounted_product.item_info.by_line_info.brand.display_value
                 is_found = not is_found
 
         return Product(
-            title=product_title,
-            brand=brand,
-            full_url=full_url,
-            short_url=short_url,
-            discount_rate=discount_rate,
-            discount_amount=discount_amount,
-            image=image,
+            title=sale_product.item_info.title.display_value,
+            brand=sale_product.item_info.by_line_info.brand.display_value,
+            full_url=sale_product.detail_page_url,
+            short_url="",
+            discount_rate=sale_product.offers.listings[0].price.savings.percentage,
+            discount_amount=round(sale_product.offers.listings[0].price.savings.amount),
+            image=requests.get(sale_product.images.primary.large.url).content,
         )
