@@ -45,34 +45,39 @@ class TestPost(unittest.TestCase):
     def test_add_hashtags(self):
         test_cases = [
             {
-                # ブランド名の中に半角スペースが存在しない
-                "product_title": "ソト (SOTO) マイクロトーチ",
-                "brand": "ソト(SOTO)",
-                "expected": "#ソト  (#SOTO ) マイクロトーチ",
+                "target_text": "スノーピーク(snow peak) HOME&CAMPバーナー",
+                "hashtag_target": "スノーピーク",
+                "expected": "#スノーピーク (snow peak) HOME&CAMPバーナー",
             },
             {
-                # ブランド名の中に半角スペースが存在する
-                "product_title": "スノーピーク(snow peak) HOME&CAMPバーナー",
-                "brand": "Snow Peak(スノーピーク)",
-                "expected": "#スノーピーク (#SnowPeak ) HOME&CAMPバーナー",
+                # ハッシュタグ化対象の文字列に半角スペースが存在する
+                "target_text": "スノーピーク(snow peak) HOME&CAMPバーナー",
+                "hashtag_target": "snow peak",
+                "expected": "スノーピーク(#snowpeak ) HOME&CAMPバーナー",
             },
             {
-                # ブランド名が英語のみ
-                "product_title": "Naturehike 寝袋",
-                "brand": "Naturehike",
-                "expected": "#Naturehike  寝袋",
+                # ハッシュタグ化対象の文字列に半角スペースが存在しない
+                "target_text": "スノーピーク(SnowPeak) HOME&CAMPバーナー",
+                "hashtag_target": "SnowPeak",
+                "expected": "スノーピーク(#SnowPeak ) HOME&CAMPバーナー",
             },
             {
-                # 「ブランド名に半角スペースが存在する」かつ「商品タイトルには半角スペースが存在しない」
-                "product_title": "PrimeCamp エアーポンプ",
-                "brand": "Prime Camp",
-                "expected": "#PrimeCamp  エアーポンプ",
+                # 大文字・小文字を無視する
+                "target_text": "スノーピーク(snowpeak) HOME&CAMPバーナー",
+                "hashtag_target": "SnowPeak",
+                "expected": "スノーピーク(#SnowPeak ) HOME&CAMPバーナー",
+            },
+            {
+                # ハッシュタグ化する文字列が存在しない
+                "target_text": "スノーピーク(snow peak) HOME&CAMPバーナー",
+                "hashtag_target": "ソト",
+                "expected": "スノーピーク(snow peak) HOME&CAMPバーナー",
             },
         ]
 
         for test_case in test_cases:
             result = self.post.add_hashtags(
-                test_case["product_title"], test_case["brand"]
+                test_case["target_text"], test_case["hashtag_target"]
             )
             self.assertEqual(result, test_case["expected"])
 
