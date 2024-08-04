@@ -1,5 +1,3 @@
-import os
-
 from dotenv import load_dotenv
 
 from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase
@@ -9,8 +7,6 @@ from infrastructure.service.post_service import PostService
 
 
 load_dotenv()
-app_env = os.getenv("APP_ENV", "local")
-load_dotenv(f".env.{app_env}", override=True)
 
 
 def main():
