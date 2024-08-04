@@ -1,7 +1,4 @@
-import os
-
 from dotenv import load_dotenv
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase
 from infrastructure.repository.product_repository import ProductRepository
@@ -10,8 +7,6 @@ from infrastructure.service.post_service import PostService
 
 
 load_dotenv()
-app_env = os.getenv("APP_ENV", "local")
-load_dotenv(f".env.{app_env}", override=True)
 
 
 def main():
@@ -22,9 +17,7 @@ def main():
         product_repository, post_service
     )
 
-    scheduler = BlockingScheduler(timezone="Asia/Tokyo")
-    scheduler.add_job(post_camp_gear_sale_use_case.handle, "interval", minutes=30)
-    scheduler.start()
+    post_camp_gear_sale_use_case.handle()
 
 
 if __name__ == "__main__":

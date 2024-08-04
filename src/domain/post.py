@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import re
 from textwrap import dedent
 
 
@@ -21,9 +22,11 @@ class Post:
         return 0
 
     def add_hashtags(self, target_text, hashtag_target):
-        return target_text.replace(
-            hashtag_target,
-            "#" + hashtag_target + " ",
+        return re.sub(
+            re.escape(hashtag_target),
+            "#" + hashtag_target.replace(" ", "") + " ",
+            target_text,
+            flags=re.IGNORECASE,
         )
 
     def shorten_content(self, target_content, shorten_length):
