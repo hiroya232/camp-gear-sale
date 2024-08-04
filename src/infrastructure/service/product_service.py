@@ -49,9 +49,9 @@ class ProductService:
     ]
 
     def auth_amazon_api(self):
-        ACCESS_KEY = os.getenv("ACCESS_KEY")
-        SECRET_KEY = os.getenv("SECRET_KEY")
-        ASSOCIATE_ID = os.getenv("ASSOCIATE_ID")
+        ACCESS_KEY = os.environ["ACCESS_KEY"]
+        SECRET_KEY = os.environ["SECRET_KEY"]
+        ASSOCIATE_ID = os.environ["ASSOCIATE_ID"]
         COUNTRY = "JP"
 
         return AmazonApi(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
