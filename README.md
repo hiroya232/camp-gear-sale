@@ -2,90 +2,90 @@
 
 ## 概要
 
-キャンプ用品のセール情報を定期的にツイートするアプリケーション。
-Amazonからセール中の商品情報を取得し、その商品情報をまとめたポストを作成しXに投稿します。
+キャンプ用品のセール情報を定期的にXにポストするアプリケーション。
+Amazonからセール中の商品を取得し、その商品情報をまとめたポストを作成しXに投稿。
 
-## 機能
+## 機能一覧
 
-- Amazonからセール中のキャンプ用品の商品情報（商品タイトル、割引率、商品URL、ブランド名）を取得
-- 取得した商品情報をフォーマットしてポストを作成
-  - タイトルを三点リーダで省略
-  - 商品URLをtinyurlで短縮
+- Amazonでセール中のキャンプ用品の商品情報を取得
+- 取得した商品情報から必要な情報を抽出、フォーマットしてポストを作成
+  - ポストの文字数制限に合わせて商品タイトルを三点リーダで省略
+  - 商品URLを`TinyURL`で短縮
   - 商品タイトル中のブランド名にハッシュタグをつける
-- スケジューラ（`apscheduler`）で定期的に上記処理を実行
-
-## システム構成図
-
-```mermaid
-graph LR
-AmazonAPI[Amazon Product Advertising API] -->|セール中商品情報取得| CampGearSale[Camp Gear Sale]
-CampGearSale -->|ポスト作成・投稿| TwitterAPI[Twitter API]
-```
+- 作成したポストをXに投稿する（投稿頻度は`EventBridge Scheduler`で設定）
 
 ## 技術スタック
 
-- Python 3.8
-- Docker 20.10.7
-- Docker Compose version v2.24.6
-- Amazon Product Advertising API v5
-- Twitter API v2
-- APScheduler 3.6
+- Amazon ECS
+- Amazon ECR
+- Amazon EventBridge Scheduler
+- AWS Fargate
+- AWS Secrets Manager
+- Python v3.11.5
+- PA-API v5
+- X API v2
+- Docker v27.1.1
 
-## 環境変数
+## AWS構成図
 
-以下の環境変数を`.env`ファイルに設定してください。
-
-```env
-ACCESS_KEY=PA-APIのアクセスキー
-SECRET_KEY=PA-APIのシークレットキー
-ASSOCIATE_ID=AmazonアソシエイトID
-
-CONSUMER_KEY=TwitterAPIのコンシューマーキー
-CONSUMER_SECRET=TwitterAPIのコンシューマーシークレット
-ACCESS_TOKEN=TwitterAPIのアクセストークン
-ACCESS_TOKEN_SECRET=TwitterAPIのアクセストークンシークレット
-```
+![camp-gear-sale-architecture-diagram (1) drawio](https://github.com/user-attachments/assets/18db7d0d-9de3-4c69-a866-579e6978b2ee)
 
 ## ディレクトリ構成
 
 ```tree
 .
+├── .dockerignore
 ├── .env
+├── .env.local
+├── .env.production
 ├── .gitignore
 ├── Dockerfile
 ├── README.md
-├── docker-compose.yml
 ├── main.py
+├── requirements.txt
 └── src
-    ├── api.py
-    ├── domain/
-    ├── product.py
-    ├── scheduler.py
-    ├── tests/
-    ├── tweet.py
-    └── usecase/
+    ├── application
+    ├── domain
+    ├── infrastructure
+    └── tests
 ```
-
-## 開発環境の構築方法
-
-1. リポジトリをクローンする。
-2. 必要な環境変数を`.env`ファイルに設定する。
-3. Dockerを使用してアプリケーションをビルドする。
-
-    ```bash
-    docker-compose build
-    ```
-
-4. コンテナを起動する。
-
-    ```bash
-    docker-compose up
-    ```
 
 ## 実行方法
 
-Dockerコンテナ内で以下のコマンドを実行する。
+1. このリポジトリをクローン
+2. 環境変数を`.env`ファイルで設定
 
-```bash
-python src/main.py
-```
+    ```env
+    ACCESS_KEY={{PA-APIのアクセスキー}}
+    SECRET_KEY={{PA-APIのシークレットキー}}
+    ASSOCIATE_ID={{AmazonアソシエイトID}}
+
+    CONSUMER_KEY={{X APIのコンシューマーキー}}
+    CONSUMER_SECRET={{X APIのコンシューマーシークレット}}
+    ACCESS_TOKEN={{X APIのアクセストークン}}
+    ACCESS_TOKEN_SECRET={{X APIのアクセストークンシークレット}}
+    ```
+
+3. Dockerイメージをビルド
+
+    ```bash
+    docker build -t camp-gear-sale .
+    ```
+
+4. コンテナを起動
+
+    ```bash
+    docker run -v ./:/workspace  -itd --name camp-gear-sale camp-gear-sale bash
+    ```
+
+5. コンテナにアタッチ
+
+    ```bash
+    docker attach camp-gear-sale
+    ```
+
+6. プロジェクトルートで下記コマンドを実行
+
+    ```bash
+    python main.py
+    ```
