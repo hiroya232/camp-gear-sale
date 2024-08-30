@@ -56,9 +56,3 @@ class Post:
             "media_type": "TEXT",
             "text": content,
         }
-
-    def create_instagram_post_payload(self, content, media):
-        return {
-            "image_url": media,
-            "caption": content,
-        }

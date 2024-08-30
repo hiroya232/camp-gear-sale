@@ -93,5 +93,5 @@ class ProductService:
             short_url="",
             discount_rate=sale_product.offers.listings[0].price.savings.percentage,
             discount_amount=round(sale_product.offers.listings[0].price.savings.amount),
-            image=sale_product.images.primary.large.url,
+            image=requests.get(sale_product.images.primary.large.url).content,
         )
