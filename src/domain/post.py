@@ -48,5 +48,11 @@ class Post:
             """
         )
 
-    def create_post(self, content, media_id):
+    def create_x_post_payload(self, content, media_id):
         return {"text": content, "media": {"media_ids": [media_id]}}
+
+    def create_threads_post_payload(self, content):
+        return {
+            "media_type": "TEXT",
+            "text": content,
+        }
