@@ -30,7 +30,28 @@ class PostService:
 
         auth = self.auth_twitter_api()
         media_id = self.fetch_media_id(auth, self.MEDIA_UPLOAD_ENDPOINT, image)
-        post = post.create_post(content, media_id)
+        x_post_payload = post.create_x_post_payload(content, media_id)
 
-        response = requests.post(self.POST_TWEET_ENDPOINT, auth=auth, json=post)
-        print(response.json())
+        x_response = requests.post(self.POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload)
+        print(x_response.json())
+
+        threads_auth = "Bearer " + os.environ["THREADS_ACCESS_TOKEN"]
+        threads_post_payload = post.create_threads_post_payload(content)
+        threads_response = requests.post(
+            "https://graph.threads.net/v1.0/me/threads",
+            json=threads_post_payload,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": threads_auth,
+            },
+        )
+        print(threads_response.json())
+        threads_response = requests.post(
+            "https://graph.threads.net/v1.0/me/threads_publish",
+            json={"creation_id": threads_response.json()["id"]},
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": threads_auth,
+            },
+        )
+        print(threads_response.json())
