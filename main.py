@@ -5,7 +5,6 @@ from infrastructure.repository.product_repository import ProductRepository
 from infrastructure.service.product_service import ProductService
 from infrastructure.service.post_service import PostService
 
-
 load_dotenv()
 
 
