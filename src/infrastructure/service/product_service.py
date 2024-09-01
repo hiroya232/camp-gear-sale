@@ -1,7 +1,9 @@
 import os
 import random
+import logging
 
 from amazon_paapi import AmazonApi
+from amazon_paapi.errors.exceptions import TooManyRequests, RequestError
 import requests
 
 from domain.product import Product
@@ -63,21 +65,47 @@ class ProductService:
         while not is_found:
             target_browse_node_index = random.randint(0, len(self.BROWSE_NODE_LIST) - 1)
             target_page = random.randint(1, 10)
-            sale_product_list = amazon_api.search_items(
-                browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
-                item_page=target_page,
-                item_count=10,
-                min_saving_percent=1,
-            ).items
 
-            sale_product_list = [
-                sale_product
-                for sale_product in sale_product_list
-                if sale_product.offers.listings[0].price.savings is not None
-                and sale_product.offers.listings[0].price.savings.percentage is not None
-                and sale_product.offers.listings[0].price.savings.amount is not None
-                and sale_product.item_info.by_line_info.brand.display_value is not None
-            ]
+            try:
+                sale_product_list = amazon_api.search_items(
+                    browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
+                    item_page=target_page,
+                    item_count=10,
+                    min_saving_percent=1,
+                ).items
+
+                sale_product_list = [
+                    sale_product
+                    for sale_product in sale_product_list
+                    if sale_product.offers.listings[0].price.savings is not None
+                    and sale_product.offers.listings[0].price.savings.percentage
+                    is not None
+                    and sale_product.offers.listings[0].price.savings.amount is not None
+                    and sale_product.item_info.by_line_info.brand.display_value
+                    is not None
+                ]
+            except TooManyRequests as e:
+                logging.error(
+                    f"PA-APIのレート上限に達しました。: {e}",
+                    exc_info=True,
+                )
+            except RequestError as e:
+                logging.error(
+                    f"PA-APIへのリクエストが失敗しました。: {e}",
+                    exc_info=True,
+                )
+            except AttributeError as e:
+                logging.error(
+                    f"取得した商品情報に必要なデータが含まれていません。: {e}",
+                    exc_info=True,
+                )
+                continue
+            except Exception as e:
+                logging.error(
+                    f"セール商品取得中に予期せぬエラーが発生しました。: {e}",
+                    exc_info=True,
+                )
+                continue
 
             sale_product_count = len(sale_product_list)
             if sale_product_count > 0:

@@ -1,7 +1,8 @@
+import logging
 import os
-import requests
 
 from requests_oauthlib import OAuth1
+import requests
 
 from domain.post import Post
 
@@ -32,26 +33,47 @@ class PostService:
         media_id = self.fetch_media_id(auth, self.MEDIA_UPLOAD_ENDPOINT, image)
         x_post_payload = post.create_x_post_payload(content, media_id)
 
-        x_response = requests.post(self.POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload)
-        print(x_response.json())
-
         threads_auth = "Bearer " + os.environ["THREADS_ACCESS_TOKEN"]
         threads_post_payload = post.create_threads_post_payload(content)
-        threads_response = requests.post(
-            "https://graph.threads.net/v1.0/me/threads",
-            json=threads_post_payload,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": threads_auth,
-            },
-        )
-        print(threads_response.json())
-        threads_response = requests.post(
-            "https://graph.threads.net/v1.0/me/threads_publish",
-            json={"creation_id": threads_response.json()["id"]},
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": threads_auth,
-            },
-        )
-        print(threads_response.json())
+
+        try:
+            x_response = requests.post(
+                self.POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload
+            )
+            print(x_response.json())
+
+            threads_response = requests.post(
+                "https://graph.threads.net/v1.0/me/threads",
+                json=threads_post_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": threads_auth,
+                },
+            )
+            print(threads_response.json())
+
+            threads_response = requests.post(
+                "https://graph.threads.net/v1.0/me/threads_publish",
+                json={"creation_id": threads_response.json()["id"]},
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": threads_auth,
+                },
+            )
+            print(threads_response.json())
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:
+                logging.error(
+                    f"レート上限に達しました。: {e}",
+                    exc_info=True,
+                )
+        except requests.exceptions.RequestException as e:
+            logging.error(
+                f"リクエスト中にエラーが発生しました。: {e}",
+                exc_info=True,
+            )
+        except Exception as e:
+            logging.error(
+                f"投稿中に予期せぬエラーが発生しました。: {e}",
+                exc_info=True,
+            )
