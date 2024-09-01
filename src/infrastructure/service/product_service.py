@@ -1,12 +1,12 @@
 import os
 import random
-import logging
 
 from amazon_paapi import AmazonApi
 from amazon_paapi.errors.exceptions import TooManyRequests, RequestError
 import requests
 
 from domain.product import Product
+from logger_config import logger
 
 
 class ProductService:
@@ -84,35 +84,36 @@ class ProductService:
                     and sale_product.item_info.by_line_info.brand.display_value
                     is not None
                 ]
+
+                sale_product_count = len(sale_product_list)
+                if sale_product_count > 0:
+                    sale_product = sale_product_list[
+                        random.randint(0, sale_product_count - 1)
+                    ]
+                    is_found = not is_found
+                    logger.info("選択した商品情報 : %s", sale_product)
             except TooManyRequests as e:
-                logging.error(
+                logger.error(
                     f"PA-APIのレート上限に達しました。: {e}",
                     exc_info=True,
                 )
             except RequestError as e:
-                logging.error(
+                logger.error(
                     f"PA-APIへのリクエストが失敗しました。: {e}",
                     exc_info=True,
                 )
             except AttributeError as e:
-                logging.error(
+                logger.error(
                     f"取得した商品情報に必要なデータが含まれていません。: {e}",
                     exc_info=True,
                 )
                 continue
             except Exception as e:
-                logging.error(
+                logger.error(
                     f"セール商品取得中に予期せぬエラーが発生しました。: {e}",
                     exc_info=True,
                 )
                 continue
-
-            sale_product_count = len(sale_product_list)
-            if sale_product_count > 0:
-                sale_product = sale_product_list[
-                    random.randint(0, sale_product_count - 1)
-                ]
-                is_found = not is_found
 
         return Product(
             title=sale_product.item_info.title.display_value,

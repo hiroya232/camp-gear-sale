@@ -1,19 +1,9 @@
-import logging
-
 from dotenv import load_dotenv
 
 from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase
 from infrastructure.repository.product_repository import ProductRepository
 from infrastructure.service.product_service import ProductService
 from infrastructure.service.post_service import PostService
-
-
-logging.basicConfig(
-    filename="error.log",
-    format="%(levelname)-9s %(asctime)s [%(filename)s:%(lineno)d] %(message)s",
-    datefmt="%Y-%d-%m %I:%M:%S",
-    level=logging.DEBUG,
-)
 
 load_dotenv()
 

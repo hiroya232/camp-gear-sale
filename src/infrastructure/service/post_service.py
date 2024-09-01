@@ -1,10 +1,10 @@
-import logging
 import os
 
 from requests_oauthlib import OAuth1
 import requests
 
 from domain.post import Post
+from logger_config import logger
 
 
 class PostService:
@@ -40,7 +40,7 @@ class PostService:
             x_response = requests.post(
                 self.POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload
             )
-            print(x_response.json())
+            logger.info("【X API】メディアコンテナ作成リクエストのレスポンス : %s", x_response.json())
 
             threads_response = requests.post(
                 "https://graph.threads.net/v1.0/me/threads",
@@ -50,7 +50,10 @@ class PostService:
                     "Authorization": threads_auth,
                 },
             )
-            print(threads_response.json())
+            logger.info(
+                "【Threads API】メディアコンテナ作成リクエストのレスポンス : %s",
+                threads_response.json(),
+            )
 
             threads_response = requests.post(
                 "https://graph.threads.net/v1.0/me/threads_publish",
@@ -60,20 +63,23 @@ class PostService:
                     "Authorization": threads_auth,
                 },
             )
-            print(threads_response.json())
+            logger.info(
+                "【Threads API】メディアコンテナ公開リクエストのレスポンス : %s",
+                threads_response.json(),
+            )
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
-                logging.error(
+                logger.error(
                     f"レート上限に達しました。: {e}",
                     exc_info=True,
                 )
         except requests.exceptions.RequestException as e:
-            logging.error(
+            logger.error(
                 f"リクエスト中にエラーが発生しました。: {e}",
                 exc_info=True,
             )
         except Exception as e:
-            logging.error(
+            logger.error(
                 f"投稿中に予期せぬエラーが発生しました。: {e}",
                 exc_info=True,
             )
