@@ -26,6 +26,8 @@ class PostCampGearSaleUseCase:
         for bn in brand_notation_list:
             product.title = post.add_hashtags(product.title, bn)
 
+        product.title = product.title.replace("##", "#")
+
         excess_length = post.calculate_excess_length(
             [
                 product.title,
