@@ -1,8 +1,12 @@
 import os
 import random
+import time
 
-from amazon_paapi import AmazonApi
-from amazon_paapi.errors.exceptions import TooManyRequests, RequestError
+from paapi5_python_sdk.api.default_api import DefaultApi
+from paapi5_python_sdk.models.partner_type import PartnerType
+from paapi5_python_sdk.rest import ApiException
+from paapi5_python_sdk.models.search_items_request import SearchItemsRequest
+from paapi5_python_sdk.models.search_items_resource import SearchItemsResource
 import requests
 
 from domain.product import Product
@@ -51,12 +55,12 @@ class ProductService:
     ]
 
     def auth_amazon_api(self):
-        ACCESS_KEY = os.environ["ACCESS_KEY"]
-        SECRET_KEY = os.environ["SECRET_KEY"]
-        ASSOCIATE_ID = os.environ["ASSOCIATE_ID"]
-        COUNTRY = "JP"
-
-        return AmazonApi(ACCESS_KEY, SECRET_KEY, ASSOCIATE_ID, COUNTRY)
+        return DefaultApi(
+            access_key=os.environ["ACCESS_KEY"],
+            secret_key=os.environ["SECRET_KEY"],
+            host=os.environ["HOST"],
+            region=os.environ["REGION"],
+        )
 
     def fetch_sale_product(self):
         amazon_api = self.auth_amazon_api()
@@ -68,11 +72,21 @@ class ProductService:
 
             try:
                 sale_product_list = amazon_api.search_items(
-                    browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
-                    item_page=target_page,
-                    item_count=10,
-                    min_saving_percent=1,
-                ).items
+                    SearchItemsRequest(
+                        partner_tag=os.environ["ASSOCIATE_ID"],
+                        partner_type=PartnerType.ASSOCIATES,
+                        browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
+                        item_page=target_page,
+                        item_count=10,
+                        min_saving_percent=1,
+                        resources=[
+                            SearchItemsResource.ITEMINFO_TITLE,
+                            SearchItemsResource.ITEMINFO_BYLINEINFO,
+                            SearchItemsResource.OFFERS_LISTINGS_PRICE,
+                            SearchItemsResource.IMAGES_PRIMARY_LARGE,
+                        ],
+                    )
+                ).search_result.items
 
                 sale_product_list = [
                     sale_product
@@ -92,14 +106,9 @@ class ProductService:
                     ]
                     is_found = not is_found
                     logger.info("選択した商品情報 : %s", sale_product)
-            except TooManyRequests as e:
+            except ApiException as e:
                 logger.error(
-                    f"PA-APIのレート上限に達しました。: {e}",
-                    exc_info=True,
-                )
-            except RequestError as e:
-                logger.error(
-                    f"PA-APIへのリクエストが失敗しました。: {e}",
+                    f"PA-APIへのリクエスト時にエラーが発生しました。: {e}",
                     exc_info=True,
                 )
             except AttributeError as e:
@@ -114,6 +123,8 @@ class ProductService:
                     exc_info=True,
                 )
                 continue
+            finally:
+                time.sleep(1)
 
         return Product(
             title=sale_product.item_info.title.display_value,
