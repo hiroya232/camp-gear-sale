@@ -56,14 +56,21 @@ Amazonからセール中の商品を取得し、その商品情報をまとめ�
 2. 環境変数を`.env`ファイルで設定
 
     ```env
-    ACCESS_KEY={{PA-APIのアクセスキー}}
-    SECRET_KEY={{PA-APIのシークレットキー}}
-    ASSOCIATE_ID={{AmazonアソシエイトID}}
-
-    CONSUMER_KEY={{X APIのコンシューマーキー}}
-    CONSUMER_SECRET={{X APIのコンシューマーシークレット}}
-    ACCESS_TOKEN={{X APIのアクセストークン}}
-    ACCESS_TOKEN_SECRET={{X APIのアクセストークンシークレット}}
+    # PA-API認証情報
+    ACCESS_KEY = {{PA-APIのアクセスキー}}
+    SECRET_KEY = {{PA-APIのシークレットキー}}
+    ASSOCIATE_ID = {{AmazonアソシエイトのアソシエイトIDもしくはトラッキングID}}
+    HOST = 'webservices.amazon.co.jp'
+    REGION = 'us-west-2'
+    
+    # X API認証情報
+    CONSUMER_KEY = {{X APIのコンシューマーキー}}
+    CONSUMER_SECRET = {{X APIのコンシューマーシークレット}}
+    ACCESS_TOKEN = {{X APIのアクセストークン}}
+    ACCESS_TOKEN_SECRET = {{X APIのアクセストークンシークレット}}
+    
+    # ThreadsAPI認証情報
+    THREADS_ACCESS_TOKEN = {{ThreadsAPIのアクセストークン}}
     ```
 
 3. Dockerイメージをビルド
