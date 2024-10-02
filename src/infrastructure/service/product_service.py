@@ -1,8 +1,6 @@
 import os
 import random
-
-from amazon_paapi import AmazonApi
-from amazon_paapi.errors.exceptions import TooManyRequests, RequestError
+import time
 
 from paapi5_python_sdk.api.default_api import DefaultApi
 from paapi5_python_sdk.models.partner_type import PartnerType
@@ -125,6 +123,8 @@ class ProductService:
                     exc_info=True,
                 )
                 continue
+            finally:
+                time.sleep(1)
 
         return Product(
             title=sale_product.item_info.title.display_value,
