@@ -76,6 +76,7 @@ class ProductService:
                         partner_tag=os.environ["ASSOCIATE_ID"],
                         partner_type=PartnerType.ASSOCIATES,
                         browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
+                        delivery_flags=["Prime"],
                         item_page=target_page,
                         item_count=10,
                         min_saving_percent=1,
