@@ -1,0 +1,8 @@
+services:
+  app:
+    restart: always
+    build: .
+    container_name: 'camp-gear-sale'
+    tty: true
+    volumes:
+      - .:/workspace/
