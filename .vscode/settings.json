@@ -1,4 +1,7 @@
 {
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
     "isort.check": true,
     "python.testing.unittestArgs": [
         "-v",
