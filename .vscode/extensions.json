@@ -1,7 +1,17 @@
 {
     "recommendations": [
-        "ms-python.python",
+        "christian-kohler.path-intellisense",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "github.copilot-chat",
+        "github.copilot",
+        "mhutchie.git-graph",
+        "ms-ceintl.vscode-language-pack-ja",
+        "ms-python.black-formatter",
+        "ms-python.debugpy",
+        "ms-python.isort",
         "ms-python.vscode-pylance",
-        "ms-python.black-formatter"
+        "oderwat.indent-rainbow",
+        "pkief.material-icon-theme",
     ]
 }

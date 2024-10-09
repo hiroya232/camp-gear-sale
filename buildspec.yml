@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 27
+    commands:
+      - docker version
+      - docker compose version
+      - echo "Installing dependencies..."
+      - pip install -r requirements.txt
+
+  build:
+    commands:
+      - echo "Building the Docker images..."
+      - docker compose build
+
+  post_build:
+    commands:
+      - echo "Running tests..."
+      - docker compose run app python -m unittest discover -s tests

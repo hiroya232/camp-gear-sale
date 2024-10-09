@@ -1,3 +1,7 @@
+import sys
+
+print(sys.path)
+
 from dotenv import load_dotenv
 
 from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase

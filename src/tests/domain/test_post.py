@@ -94,11 +94,13 @@ class TestPost(unittest.TestCase):
         self.assertEqual(result, test_case["expected"])
 
     def test_create_threads_post_payload(self):
-        test_case = {
-            "media_type": "TEXT",
-            "text": "Test Content",
-            "expected": {"media_type": "TEXT", "text": "Test Content"}},
-        }
+        test_case = (
+            {
+                "media_type": "TEXT",
+                "text": "Test Content",
+                "expected": {"media_type": "TEXT", "text": "Test Content"},
+            },
+        )
 
         result = self.post.create_threads_post_payload(test_case["content"])
         self.assertEqual(result, test_case["expected"])
