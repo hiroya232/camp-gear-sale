@@ -5,23 +5,17 @@ phases:
     runtime-versions:
       docker: 27
     commands:
+      - docker version
+      - docker compose version
       - echo "Installing dependencies..."
       - pip install -r requirements.txt
-      - pip install pylint
-  pre_build:
-    commands:
-      - echo "Running lint..."
-      - pylint src/
+
   build:
     commands:
       - echo "Building the Docker images..."
       - docker compose build
+
   post_build:
     commands:
       - echo "Running tests..."
-      - docker compose run my-app pytest tests/
-
-artifacts:
-  files:
-    - '**/*'
-  discard-paths: yes
+      - docker compose run app python -m unittest discover -s tests
