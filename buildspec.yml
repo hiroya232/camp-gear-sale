@@ -17,3 +17,19 @@ phases:
     commands:
       - echo "Running tests..."
       - docker compose run app python -m unittest discover -v -s ./src/tests/domain -p "test_*.py"
+      - |
+        if [ "$CODEBUILD_WEBHOOK_EVENT" = "PULL_REQUEST_MERGED" ]; then
+          if [ "$CODEBUILD_WEBHOOK_BASE_REF" = "^refs/heads/develop$" ]; then
+            echo "Pushing the Docker image to the develop repository..."
+            docker tag camp-gear-sale:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/camp-gear-sale-dev:latest
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/camp-gear-sale-dev:latest
+          elif [ "$CODEBUILD_WEBHOOK_BASE_REF" = "^refs/heads/main$" ]; then
+            echo "Pushing the Docker image to the production repository..."
+            docker tag camp-gear-sale:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/camp-gear-sale-prd:latest
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/camp-gear-sale-prd:latest
+          else
+            echo "Skipping Docker image push for non-develop and non-main branches"
+          fi
+        else
+          echo "Skipping Docker image push for non-merge event"
+        fi
