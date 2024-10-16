@@ -96,8 +96,8 @@ class TestPost(unittest.TestCase):
     def test_create_threads_post_payload(self):
         test_case = {
             "media_type": "TEXT",
-            "text": "Test Content",
-            "expected": {"media_type": "TEXT", "text": "Test Content"}},
+            "content": "Test Content",
+            "expected": {"media_type": "TEXT", "text": "Test Content"},
         }
 
         result = self.post.create_threads_post_payload(test_case["content"])
