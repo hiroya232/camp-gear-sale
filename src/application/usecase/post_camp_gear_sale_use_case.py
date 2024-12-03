@@ -28,6 +28,9 @@ class PostCampGearSaleUseCase:
 
         product.title = product.title.replace("##", "#")
 
+        shortener = Shortener()
+        product.short_url = shortener.tinyurl.short(product.full_url)
+
         excess_length = post.calculate_excess_length(
             [
                 product.title,
@@ -38,9 +41,6 @@ class PostCampGearSaleUseCase:
         )
         if excess_length > 0:
             product.title = post.shorten_content(product.title, excess_length)
-
-        shortener = Shortener()
-        product.short_url = shortener.tinyurl.short(product.full_url)
 
         post_content = post.create_content(
             [
