@@ -62,7 +62,7 @@ class ProductService:
             region=os.environ["REGION"],
         )
 
-    def fetch_sale_product(self):
+    def fetch_sale_product(self, associate_id):
         amazon_api = self.auth_amazon_api()
 
         is_found = False
@@ -73,7 +73,7 @@ class ProductService:
             try:
                 sale_product_list = amazon_api.search_items(
                     SearchItemsRequest(
-                        partner_tag=os.environ["ASSOCIATE_ID"],
+                        partner_tag=associate_id,
                         partner_type=PartnerType.ASSOCIATES,
                         browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
                         delivery_flags=["Prime"],
