@@ -4,12 +4,14 @@ import re
 from pyshorteners import Shortener
 
 from domain.post import Post
+from domain.post_service import PostService
+from domain.product_service import ProductService
 
 
 class PostCampGearSaleUseCase:
 
-    def __init__(self, product_repository, post_service):
-        self.product_repository = product_repository
+    def __init__(self, product_service: ProductService, post_service: PostService):
+        self.product_service = product_service
         self.post_service = post_service
 
     def handle(self):
@@ -23,7 +25,7 @@ class PostCampGearSaleUseCase:
         }
 
         for key, associate_id in associate_ids.items():
-            product = self.product_repository.fetch_sale_product(associate_id)
+            product = self.product_service.fetch_sale_product(associate_id)
 
             brand_notation_list = [
                 bn for bn in re.split(r"\((.*?)\)", product.brand) if bn != ""

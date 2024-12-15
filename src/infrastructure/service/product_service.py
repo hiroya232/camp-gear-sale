@@ -9,11 +9,12 @@ from paapi5_python_sdk.models.search_items_request import SearchItemsRequest
 from paapi5_python_sdk.models.search_items_resource import SearchItemsResource
 import requests
 
+from domain.product_service import ProductService
 from domain.product import Product
 from logger_config import logger
 
 
-class ProductService:
+class ProductService(ProductService):
 
     BROWSE_NODE_LIST = [
         "15325701",  # キャンプ用グリル・焚火台
@@ -54,7 +55,7 @@ class ProductService:
         "15348681",  # ストーブ・ヒーター・ウォーマー
     ]
 
-    def auth_amazon_api(self):
+    def auth_amazon_api(self) -> DefaultApi:
         return DefaultApi(
             access_key=os.environ["ACCESS_KEY"],
             secret_key=os.environ["SECRET_KEY"],
@@ -62,7 +63,7 @@ class ProductService:
             region=os.environ["REGION"],
         )
 
-    def fetch_sale_product(self, associate_id):
+    def fetch_sale_product(self, associate_id: str) -> Product:
         amazon_api = self.auth_amazon_api()
 
         is_found = False

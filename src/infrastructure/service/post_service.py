@@ -4,10 +4,11 @@ from requests_oauthlib import OAuth1
 import requests
 
 from domain.post import Post
+from domain.post_service import PostService
 from logger_config import logger
 
 
-class PostService:
+class PostService(PostService):
 
     POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
     MEDIA_UPLOAD_ENDPOINT = "https://upload.twitter.com/1.1/media/upload.json"
