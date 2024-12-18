@@ -1,5 +1,5 @@
-from textwrap import dedent
 import unittest
+from textwrap import dedent
 
 from domain.post import Post
 

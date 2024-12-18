@@ -1,7 +1,7 @@
 import os
 
-from requests_oauthlib import OAuth1
 import requests
+from requests_oauthlib import OAuth1
 
 from domain.post import Post
 from domain.post_service import PostService

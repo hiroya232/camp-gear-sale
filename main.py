@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 
-from application.usecase.post_camp_gear_sale_use_case import PostCampGearSaleUseCase
+from application.usecase.post_camp_gear_sale_use_case import \
+    PostCampGearSaleUseCase
 from infrastructure.service.post_service import PostService
 from infrastructure.service.product_service import ProductService
 

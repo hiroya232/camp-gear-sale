@@ -2,15 +2,15 @@ import os
 import random
 import time
 
+import requests
 from paapi5_python_sdk.api.default_api import DefaultApi
 from paapi5_python_sdk.models.partner_type import PartnerType
-from paapi5_python_sdk.rest import ApiException
 from paapi5_python_sdk.models.search_items_request import SearchItemsRequest
 from paapi5_python_sdk.models.search_items_resource import SearchItemsResource
-import requests
+from paapi5_python_sdk.rest import ApiException
 
-from domain.product_service import ProductService
 from domain.product import Product
+from domain.product_service import ProductService
 from infrastructure.dto.raw_product_data import RawProductData
 from logger_config import logger
 

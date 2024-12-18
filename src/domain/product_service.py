@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
-from domain.product import Product
 from paapi5_python_sdk.api.default_api import DefaultApi
+
+from domain.product import Product
 
 
 class ProductService(ABC):
