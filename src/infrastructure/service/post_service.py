@@ -5,13 +5,11 @@ from requests_oauthlib import OAuth1
 
 from domain.post import Post
 from domain.post_service import PostService
+from infrastructure.const import MEDIA_UPLOAD_ENDPOINT, POST_TWEET_ENDPOINT
 from logger_config import logger
 
 
 class PostService(PostService):
-
-    POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
-    MEDIA_UPLOAD_ENDPOINT = "https://upload.twitter.com/1.1/media/upload.json"
 
     def auth_twitter_api(self):
         CONSUMER_KEY = os.environ["CONSUMER_KEY"]
@@ -31,14 +29,17 @@ class PostService(PostService):
         post = Post()
 
         auth = self.auth_twitter_api()
-        media_id = self.fetch_media_id(auth, self.MEDIA_UPLOAD_ENDPOINT, image)
+        media_id = self.fetch_media_id(auth, MEDIA_UPLOAD_ENDPOINT, image)
         x_post_payload = post.create_x_post_payload(content, media_id)
 
         try:
             x_response = requests.post(
-                self.POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload
+                POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload
             )
-            logger.info("【X API】メディアコンテナ作成リクエストのレスポンス : %s", x_response.json())
+            logger.info(
+                "【X API】メディアコンテナ作成リクエストのレスポンス : %s",
+                x_response.json(),
+            )
 
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:

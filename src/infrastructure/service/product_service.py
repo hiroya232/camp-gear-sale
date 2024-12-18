@@ -11,50 +11,12 @@ from paapi5_python_sdk.rest import ApiException
 
 from domain.product import Product
 from domain.product_service import ProductService
+from infrastructure.const import BROWSE_NODE_LIST
 from infrastructure.dto.raw_product_data import RawProductData
 from logger_config import logger
 
 
 class ProductService(ProductService):
-
-    BROWSE_NODE_LIST = [
-        "15325701",  # キャンプ用グリル・焚火台
-        "15325661",  # クッキング・BBQツール
-        "14916981",  # 食器・カトラリー
-        "15325651",  # クッカー・ダッチオーブン
-        "15347701",  # コンロアクセサリ
-        "14917031",  # 燃料
-        "15347691",  # シングルバーナー
-        "15348671",  # 火起こし
-        "15347711",  # ツーバーナー
-        "14916931",  # クーラーボックス
-        "15325741",  # 保冷剤
-        "15348131",  # ジャグ
-        "15348141",  # ポリタンク・ウォータータンク
-        "15325961",  # フラスコ・スキットル
-        "16397403051",  # 浄水器・酸素
-        "15325901",  # テーブル
-        "15325891",  # チェア
-        "2201154051",  # チェア・テーブルアクセサリー
-        "15326031",  # ハンモック
-        "15325791",  # タープ
-        "15325801",  # テント本体
-        "15325811",  # テントアクセサリ
-        "14916951",  # 寝袋・シュラフ
-        "2201147051",  # 折りたたみ式ベッド
-        "15326071",  # エアーマット・エアーベッド
-        "15326231",  # ピロー(枕)
-        "15326251",  # バッグ・アクセサリ
-        "10504409051",  # 自動膨張式スリーピングマット
-        "10504410051",  # フォームスリーピングマット
-        "386606011",  # ヘッドライト
-        "14917021",  # ランタン
-        "15326141",  # ランタン用アクセサリ
-        "15314301",  # ナイフ・マルチツール
-        "15326451",  # フォールディングナイフ
-        "386599011",  # キャリーカート
-        "15348681",  # ストーブ・ヒーター・ウォーマー
-    ]
 
     def auth_amazon_api(self) -> DefaultApi:
         return DefaultApi(
@@ -69,7 +31,7 @@ class ProductService(ProductService):
 
         is_found = False
         while not is_found:
-            target_browse_node_index = random.randint(0, len(self.BROWSE_NODE_LIST) - 1)
+            target_browse_node_index = random.randint(0, len(BROWSE_NODE_LIST) - 1)
             target_page = random.randint(1, 10)
 
             try:
@@ -77,7 +39,7 @@ class ProductService(ProductService):
                     SearchItemsRequest(
                         partner_tag=associate_id,
                         partner_type=PartnerType.ASSOCIATES,
-                        browse_node_id=self.BROWSE_NODE_LIST[target_browse_node_index],
+                        browse_node_id=BROWSE_NODE_LIST[target_browse_node_index],
                         delivery_flags=["Prime"],
                         item_page=target_page,
                         item_count=10,
