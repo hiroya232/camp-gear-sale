@@ -11,6 +11,7 @@ import requests
 
 from domain.product_service import ProductService
 from domain.product import Product
+from infrastructure.dto.raw_product_data import RawProductData
 from logger_config import logger
 
 
@@ -128,7 +129,7 @@ class ProductService(ProductService):
             finally:
                 time.sleep(1)
 
-        return Product(
+        return RawProductData(
             title=sale_product.item_info.title.display_value,
             brand=sale_product.item_info.by_line_info.brand.display_value,
             full_url=sale_product.detail_page_url,
