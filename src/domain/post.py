@@ -3,7 +3,7 @@ import re
 from textwrap import dedent
 
 
-@dataclass(init=False, frozen=False)
+@dataclass(init=False, frozen=True)
 class Post:
 
     content: str
