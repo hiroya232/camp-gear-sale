@@ -11,11 +11,13 @@ from domain.product_service import ProductService
 
 class PostCampGearSaleUseCase:
 
-    def __init__(self, product_service: ProductService, post_service: PostService):
+    def __init__(
+        self, product_service: ProductService, post_service: PostService
+    ) -> None:
         self.product_service = product_service
         self.post_service = post_service
 
-    def handle(self):
+    def handle(self) -> None:
 
         post = Post()
         shortener = Shortener()

@@ -19,6 +19,11 @@ from logger_config import logger
 class ProductService(ProductService):
 
     def auth_amazon_api(self) -> DefaultApi:
+        """Amazon APIの認証情報を取得する
+
+        Returns:
+            DefaultApi: Amazon APIの認証情報
+        """
         return DefaultApi(
             access_key=os.environ["ACCESS_KEY"],
             secret_key=os.environ["SECRET_KEY"],
@@ -27,6 +32,19 @@ class ProductService(ProductService):
         )
 
     def fetch_sale_product(self, associate_id: str) -> Product:
+        """セール商品を取得する
+
+        Args:
+            associate_id (str): アソシエイトID
+
+        Returns:
+            Product: 商品情報
+
+        Raises:
+            ApiException: APIリクエスト時にエラーが発生した場合
+            AttributeError: 取得した商品情報に必要なデータが含まれていない場合
+            Exception: 予期せぬエラーが発生した場合
+        """
         amazon_api = self.auth_amazon_api()
 
         is_found = False

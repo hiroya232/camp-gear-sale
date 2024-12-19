@@ -11,7 +11,12 @@ from logger_config import logger
 
 class PostService(PostService):
 
-    def auth_twitter_api(self):
+    def auth_twitter_api(self) -> OAuth1:
+        """XAPIの認証情報を取得する
+
+        Returns:
+            OAuth1: XAPIの認証情報
+        """
         return OAuth1(
             os.environ["CONSUMER_KEY"],
             os.environ["CONSUMER_SECRET"],
@@ -19,13 +24,35 @@ class PostService(PostService):
             os.environ["ACCESS_TOKEN_SECRET"],
         )
 
-    def fetch_media_id(self, auth, media_upload_endpoint, image):
+    def fetch_media_id(
+        self, auth: OAuth1, media_upload_endpoint: str, image: bytes
+    ) -> str:
+        """Xに画像をアップロードし、メディアIDを取得する
+
+        Args:
+            auth (OAuth1): XAPIの認証情報
+            media_upload_endpoint (str): メディアアップロードエンドポイント
+            image (bytes): 画像のバイナリデータ
+
+        Returns:
+            str: XにアップロードされたメディアのID
+        """
         return requests.post(
             media_upload_endpoint, auth=auth, files={"media": image}
         ).json()["media_id_string"]
 
-    def post_to_x(self, content, image):
+    def post_to_x(self, content: str, image: bytes) -> None:
+        """Xにポストを投稿する
 
+        Args:
+            content (str): 投稿内容
+            image (bytes): 画像のバイナリデータ
+
+        Raises:
+            requests.exceptions.HTTPError: レートリミットに達した場合
+            requests.exceptions.RequestException: リクエスト中にエラーが発生した場合
+            Exception: 予期せぬエラーが発生した場合
+        """
         post = Post()
 
         auth = self.auth_twitter_api()
@@ -58,8 +85,17 @@ class PostService(PostService):
                 exc_info=True,
             )
 
-    def post_to_threads(self, content):
+    def post_to_threads(self, content: str) -> None:
+        """Threadsにポストを投稿する
 
+        Args:
+            content (str): 投稿内容
+
+        Raises:
+            requests.exceptions.HTTPError: レートリミットに達した場合
+            requests.exceptions.RequestException: リクエスト中にエラーが発生した場合
+            Exception: 予期せぬエラーが発生した場合
+        """
         post = Post()
 
         threads_auth = "Bearer " + os.environ["THREADS_ACCESS_TOKEN"]
