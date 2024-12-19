@@ -1,43 +1,72 @@
 import os
 
-from requests_oauthlib import OAuth1
 import requests
+from requests_oauthlib import OAuth1
 
-from domain.post import Post
+from domain.interfaces.post_service import PostService
+from domain.models.post import Post
+from infrastructure.const import MEDIA_UPLOAD_ENDPOINT, POST_TWEET_ENDPOINT
 from logger_config import logger
 
 
-class PostService:
+class PostService(PostService):
 
-    POST_TWEET_ENDPOINT = "https://api.twitter.com/2/tweets"
-    MEDIA_UPLOAD_ENDPOINT = "https://upload.twitter.com/1.1/media/upload.json"
+    def auth_twitter_api(self) -> OAuth1:
+        """XAPIの認証情報を取得する
 
-    def auth_twitter_api(self):
-        CONSUMER_KEY = os.environ["CONSUMER_KEY"]
-        CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
-        ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
-        ACCESS_TOKEN_SECRET = os.environ["ACCESS_TOKEN_SECRET"]
+        Returns:
+            OAuth1: XAPIの認証情報
+        """
+        return OAuth1(
+            os.environ["CONSUMER_KEY"],
+            os.environ["CONSUMER_SECRET"],
+            os.environ["ACCESS_TOKEN"],
+            os.environ["ACCESS_TOKEN_SECRET"],
+        )
 
-        return OAuth1(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    def fetch_media_id(
+        self, auth: OAuth1, media_upload_endpoint: str, image: bytes
+    ) -> str:
+        """Xに画像をアップロードし、メディアIDを取得する
 
-    def fetch_media_id(self, auth, media_upload_endpoint, image):
+        Args:
+            auth (OAuth1): XAPIの認証情報
+            media_upload_endpoint (str): メディアアップロードエンドポイント
+            image (bytes): 画像のバイナリデータ
+
+        Returns:
+            str: XにアップロードされたメディアのID
+        """
         return requests.post(
             media_upload_endpoint, auth=auth, files={"media": image}
         ).json()["media_id_string"]
 
-    def post_to_x(self, content, image):
+    def post_to_x(self, content: str, image: bytes) -> None:
+        """Xにポストを投稿する
 
+        Args:
+            content (str): 投稿内容
+            image (bytes): 画像のバイナリデータ
+
+        Raises:
+            requests.exceptions.HTTPError: レートリミットに達した場合
+            requests.exceptions.RequestException: リクエスト中にエラーが発生した場合
+            Exception: 予期せぬエラーが発生した場合
+        """
         post = Post()
 
         auth = self.auth_twitter_api()
-        media_id = self.fetch_media_id(auth, self.MEDIA_UPLOAD_ENDPOINT, image)
+        media_id = self.fetch_media_id(auth, MEDIA_UPLOAD_ENDPOINT, image)
         x_post_payload = post.create_x_post_payload(content, media_id)
 
         try:
             x_response = requests.post(
-                self.POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload
+                POST_TWEET_ENDPOINT, auth=auth, json=x_post_payload
             )
-            logger.info("【X API】メディアコンテナ作成リクエストのレスポンス : %s", x_response.json())
+            logger.info(
+                "【X API】メディアコンテナ作成リクエストのレスポンス : %s",
+                x_response.json(),
+            )
 
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
@@ -56,8 +85,17 @@ class PostService:
                 exc_info=True,
             )
 
-    def post_to_threads(self, content):
+    def post_to_threads(self, content: str) -> None:
+        """Threadsにポストを投稿する
 
+        Args:
+            content (str): 投稿内容
+
+        Raises:
+            requests.exceptions.HTTPError: レートリミットに達した場合
+            requests.exceptions.RequestException: リクエスト中にエラーが発生した場合
+            Exception: 予期せぬエラーが発生した場合
+        """
         post = Post()
 
         threads_auth = "Bearer " + os.environ["THREADS_ACCESS_TOKEN"]

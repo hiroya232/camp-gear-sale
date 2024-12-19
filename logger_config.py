@@ -1,7 +1,6 @@
 import logging
 import sys
 
-
 logger = logging.getLogger("camp_gear_sale")
 logger.setLevel(logging.DEBUG)
 
