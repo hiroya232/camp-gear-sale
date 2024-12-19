@@ -3,8 +3,8 @@ import os
 import requests
 from requests_oauthlib import OAuth1
 
-from domain.models.post import Post
 from domain.interfaces.post_service import PostService
+from domain.models.post import Post
 from infrastructure.const import MEDIA_UPLOAD_ENDPOINT, POST_TWEET_ENDPOINT
 from logger_config import logger
 

@@ -9,8 +9,8 @@ from paapi5_python_sdk.models.search_items_request import SearchItemsRequest
 from paapi5_python_sdk.models.search_items_resource import SearchItemsResource
 from paapi5_python_sdk.rest import ApiException
 
-from domain.models.product import Product
 from domain.interfaces.product_service import ProductService
+from domain.models.product import Product
 from infrastructure.const import BROWSE_NODE_LIST
 from infrastructure.dto.raw_product_data import RawProductData
 from logger_config import logger
