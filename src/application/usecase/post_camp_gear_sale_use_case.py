@@ -3,10 +3,10 @@ import re
 
 from pyshorteners import Shortener
 
-from domain.post import Post
-from domain.post_service import PostService
-from domain.product import Product
-from domain.product_service import ProductService
+from domain.models.post import Post
+from domain.interfaces.post_service import PostService
+from domain.models.product import Product
+from domain.interfaces.product_service import ProductService
 
 
 class PostCampGearSaleUseCase:
