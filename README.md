@@ -41,13 +41,25 @@ Amazonからセール中の商品を取得し、その商品情報をまとめ�
 ├── .gitignore
 ├── Dockerfile
 ├── README.md
+├── app.log
+├── buildspec.yml
+├── docker-compose.yml
+├── error.log
+├── logger_config.py
 ├── main.py
 ├── requirements.txt
 └── src
     ├── application
+    │   └── usecase/
     ├── domain
+    │   ├── interfaces/
+    │   └── models/
     ├── infrastructure
+    │   ├── const.py
+    │   ├── dto/
+    │   └── service/
     └── tests
+        └── domain/
 ```
 
 ## 実行方法
