@@ -1,7 +1,7 @@
-from textwrap import dedent
 import unittest
+from textwrap import dedent
 
-from domain.post import Post
+from domain.models.post import Post
 
 
 class TestPost(unittest.TestCase):
