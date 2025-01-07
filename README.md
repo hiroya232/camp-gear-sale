@@ -41,13 +41,25 @@ Amazonからセール中の商品を取得し、その商品情報をまとめ�
 ├── .gitignore
 ├── Dockerfile
 ├── README.md
+├── app.log
+├── buildspec.yml
+├── docker-compose.yml
+├── error.log
+├── logger_config.py
 ├── main.py
 ├── requirements.txt
 └── src
     ├── application
+    │   └── usecase/
     ├── domain
+    │   ├── interfaces/
+    │   └── models/
     ├── infrastructure
+    │   ├── const.py
+    │   ├── dto/
+    │   └── service/
     └── tests
+        └── domain/
 ```
 
 ## 実行方法
@@ -77,19 +89,18 @@ Amazonからセール中の商品を取得し、その商品情報をまとめ�
 3. Dockerイメージをビルド
 
     ```bash
-    docker build -t camp-gear-sale .
-    ```
+    docker compose build
 
 4. コンテナを起動
 
     ```bash
-    docker run -v ./:/workspace  -itd --name camp-gear-sale camp-gear-sale bash
+    docker compose up
     ```
 
 5. コンテナにアタッチ
 
     ```bash
-    docker attach camp-gear-sale
+    docker exec -it camp-gear-sale bash
     ```
 
 6. プロジェクトルートで下記コマンドを実行

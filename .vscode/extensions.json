@@ -11,6 +11,7 @@
         "ms-python.debugpy",
         "ms-python.isort",
         "ms-python.vscode-pylance",
+        "njpwerner.autodocstring",
         "oderwat.indent-rainbow",
         "pkief.material-icon-theme",
     ]
