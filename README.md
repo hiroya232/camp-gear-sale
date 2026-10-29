@@ -45,6 +45,9 @@ Amazonからセール中の商品を取得し、その商品情報をまとめ�
 ├── buildspec.yml
 ├── docker-compose.yml
 ├── error.log
+├── infra
+│   ├── .terraform.lock.hcl
+│   └── main.tf
 ├── logger_config.py
 ├── main.py
 ├── requirements.txt
