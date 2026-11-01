@@ -1,4 +1,13 @@
 terraform {
+  required_version = "~> 1.11"
+
+  # バケット名はアカウントIDを含むため、init 時に -backend-config で渡す
+  backend "s3" {
+    key          = "camp-gear-sale/terraform.tfstate"
+    region       = "ap-northeast-1"
+    use_lockfile = true
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
